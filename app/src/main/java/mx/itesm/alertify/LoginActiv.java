@@ -91,8 +91,6 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
             @Override
             public void onClick(View view) {
                 attemptLogin();
-                Intent intInicio = new Intent(getBaseContext(),InicioActiv.class);
-                startActivity(intInicio);
             }
         });
 
@@ -321,6 +319,9 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
             ruta.setValue(newUser); //Contenido
+
+            Intent intInicio = new Intent(getBaseContext(),InicioActiv.class);
+            startActivity(intInicio);
         }
 
         @Override

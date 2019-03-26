@@ -39,39 +39,50 @@ public class InicioActiv extends AppCompatActivity {
             switch (item.getItemId()) {
                 //REEMPLAZAR CODIGO CON EL DEL FRAGMENTO PROPIO
                 case R.id.navigation_inicio:
-                    BotonFrag fragBoton = new BotonFrag();
-                    transaction.replace(R.id.contFrag,fragBoton);
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    if (fm.findFragmentByTag("boton") == null) {
+                        BotonFrag fragBoton = new BotonFrag();
+                        transaction.replace(R.id.contFrag, fragBoton, "boton");
+                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
                     return true;
                 case R.id.navigation_mapa:
-                    MapaFrag fragMapa = new MapaFrag();
-                    transaction.replace(R.id.contFrag,fragMapa);
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    if (fm.findFragmentByTag("mapa") == null) {
+                        MapaFrag fragMapa = new MapaFrag();
+                        transaction.replace(R.id.contFrag, fragMapa, "mapa");
+                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
                     return true;
                 case R.id.navigation_reportes:
-                    ReporteFrag fragReporte = new ReporteFrag();
-                    transaction.replace(R.id.contFrag,fragReporte);
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    if (fm.findFragmentByTag("reporte") == null){
+                        ReporteFrag fragReporte = new ReporteFrag();
+                        transaction.replace(R.id.contFrag,fragReporte,"reporte");
+                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+
                     return true;
                 case R.id.navigation_guia:
-                    GuiaFrag fragGuia = new GuiaFrag();
-                    transaction.replace(R.id.contFrag,fragGuia);
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    if (fm.findFragmentByTag("guia") == null) {
+                        GuiaFrag fragGuia = new GuiaFrag();
+                        transaction.replace(R.id.contFrag, fragGuia, "guia");
+                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
                     return true;
                 case R.id.navigation_settings:
-                    SettingsFrag fragSettings = new SettingsFrag();
-                    transaction.replace(R.id.contFrag,fragSettings);
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    if (fm.findFragmentByTag("ajustes") == null) {
+                        SettingsFrag fragSettings = new SettingsFrag();
+                        transaction.replace(R.id.contFrag, fragSettings, "ajustes");
+                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
                     return true;
             }
             return false;
@@ -111,6 +122,18 @@ public class InicioActiv extends AppCompatActivity {
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         transaction.addToBackStack(null);
         transaction.commit();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        if(fm.getBackStackEntryCount() > 1){
+            fm.popBackStack();
+        }
+        /*else{
+            super.onBackPressed();
+        }*/
 
     }
 
