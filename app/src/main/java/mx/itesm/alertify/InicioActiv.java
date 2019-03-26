@@ -18,6 +18,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import mx.itesm.alertify.R;
 
 public class InicioActiv extends AppCompatActivity {
@@ -108,6 +111,7 @@ public class InicioActiv extends AppCompatActivity {
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         transaction.addToBackStack(null);
         transaction.commit();
+
     }
 
     public boolean checkPermission() {

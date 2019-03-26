@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -26,6 +27,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import mx.itesm.alertify.R;
 
@@ -87,6 +91,8 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
             @Override
             public void onClick(View view) {
                 attemptLogin();
+                Intent intInicio = new Intent(getBaseContext(),InicioActiv.class);
+                startActivity(intInicio);
             }
         });
 
@@ -302,6 +308,19 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
+
+            String path = "";
+
+            for(int c = 0; c < email.length(); c++){
+                if(email.charAt(c) != '.'){
+                    path += email.charAt(c);
+                }
+            }
+
+            User newUser = new User(email, password);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
+            ruta.setValue(newUser); //Contenido
         }
 
         @Override
