@@ -62,7 +62,7 @@
                 android:id="@+id/addPrincipContactButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Registrar Contacto Princial" />
+                android:text="Registrar Contacto Principal" />
 
             <TextView
                 android:id="@+id/textView9"

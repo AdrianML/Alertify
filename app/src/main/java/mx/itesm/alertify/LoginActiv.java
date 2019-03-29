@@ -7,12 +7,15 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -66,11 +69,21 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
     private View mProgressView;
     private View mLoginFormView;
 
+    Handler handler;
+    private SharedPreferences mPreferences;
+    private SharedPreferences.Editor mEditor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
+
+
+        handler = new Handler();
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mPreferences.edit();
+
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -319,7 +332,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
             ruta.setValue(newUser); //Contenido
-
+            mEditor.putBoolean("loginsuccesful", true).commit();
             Intent intInicio = new Intent(getBaseContext(),InicioActiv.class);
             startActivity(intInicio);
         }
