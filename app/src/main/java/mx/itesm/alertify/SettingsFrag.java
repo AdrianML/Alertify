@@ -2,10 +2,14 @@ package mx.itesm.alertify;
 
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +35,19 @@ public class SettingsFrag extends Fragment {
     private BotonesySwitchesSettings buttonAndSwitchesManager;
 
     private View view;
+    private Context context;
+
+    private EditText etNumeroPrincipal;
+    private EditText etNombrePrincipal;
+    private EditText etNombre;
+    private EditText etNumero;
+    private EditText etMensaje;
+
+    private Switch callContact;
+    private Switch call911;
+
+    private Button addPrincipalContact;
+    private Button saveMessage;
 
     public SettingsFrag() {
         // Required empty public constructor
@@ -45,38 +62,65 @@ public class SettingsFrag extends Fragment {
         //Referencia a los campos de la pantalla
         buttonAndSwitchesManager = new BotonesySwitchesSettings();
 
-        buttonAndSwitchesManager.setEts(view.findViewById(R.id.etNumeroPrincipal),"numberPrincipal");
-        buttonAndSwitchesManager.setEts(view.findViewById(R.id.etNombrePrincipal),"namePrincipal");
-        buttonAndSwitchesManager.setEts(view.findViewById(R.id.etNombre),"name");
-        buttonAndSwitchesManager.setEts(view.findViewById(R.id.etNumero),"number");
+        etNumeroPrincipal= view.findViewById(R.id.etNumeroPrincipal);
+        etNombrePrincipal= view.findViewById(R.id.etNombrePrincipal);
+        etNombre= view.findViewById(R.id.etNombre);
+        etNumero= view.findViewById(R.id.etNumero);
+        etMensaje=view.findViewById(R.id.etMensaje);
 
-        buttonAndSwitchesManager.setsCallOption(view.findViewById(R.id.call_contact),"contact");
-        buttonAndSwitchesManager.setsCallOption(view.findViewById(R.id.call_911),"911");
+        callContact= view.findViewById(R.id.call_contact);
+        call911=view.findViewById(R.id.call_911);
 
-        //SetChangeListener para los switches, si se llama a 911 no se puede llamar al mismo tiempo al contacto favorito
-        buttonAndSwitchesManager.isCheck("contact");
-        buttonAndSwitchesManager.isCheck("911");
-
+        addPrincipalContact=view.findViewById(R.id.addPrincipContactButton);
+        saveMessage=view.findViewById(R.id.saveMessageButton);
 
         //Referencia y metodo onclick para el boton de Definir Contacto Principal y boton Añadir contacto
-        buttonAndSwitchesManager.setButtons(view.findViewById(R.id.addPrincipContactButton),"contacPrincipal");
+        addPrincipalContact=view.findViewById(R.id.addPrincipContactButton);
 
-        buttonAndSwitchesManager.getButtons("addPrincipal").setOnClickListener(new View.OnClickListener() {
+        addPrincipalContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(buttonAndSwitchesManager.getEts("numberPrincipal").getText().toString().length()==0 || buttonAndSwitchesManager.getEts("namePrincipal").getText().toString().length()==0) {
+                if(etNumeroPrincipal.getText().toString().length()==0 || etNombrePrincipal.getText().toString().length()==0) {
                     Log.i("Error:", "falta un dato para registrarse");
                 }
 
                 else{
-                    buttonAndSwitchesManager.getsCallOption("contact").setText("Llamar a "+buttonAndSwitchesManager.getEts("namePrincipal").getText().toString());
-                    call();
-                    Log.i("Numero: ", "" + buttonAndSwitchesManager.getEts("numberPrincipal").getText().toString() + "Nombre: " + buttonAndSwitchesManager.getEts("namePrincipal").getText().toString());
+                    callContact.setText("Llamar a "+etNombrePrincipal.getText().toString());
+                    if(callContact.isChecked() && etNumeroPrincipal.getText().toString().length()!=0 && etNombrePrincipal.getText().toString().length()!=0) {
+                        call();
+                    }
+
+                    Log.i("Numero: ", "" + etNumeroPrincipal.getText().toString() + "Nombre: " + etNombrePrincipal.getText().toString());
+                }
+            }
+        });
+
+        saveMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(etMensaje.getText().toString().length()==0 && etNumeroPrincipal.getText().toString().length()!=0){
+                    Log.i("Error:", "el mensaje esta vacio");
+                }
+
+                else{
+                    Log.i("ENVIANDO:",""+etMensaje.getText().toString());
+                    sendSMS();
                 }
             }
         });
 
         return view;
+    }
+
+    public void sendSMS(){
+        final String SMS = etMensaje.getText().toString();
+        final String phoneNum = etNumeroPrincipal.getText().toString();
+
+        SmsManager smsManager = SmsManager.getDefault();
+
+//Send the SMS//
+
+        smsManager.sendTextMessage(phoneNum, null, SMS, null, null);
     }
 
     public void call()

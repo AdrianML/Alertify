@@ -39,50 +39,49 @@ public class InicioActiv extends AppCompatActivity {
             switch (item.getItemId()) {
                 //REEMPLAZAR CODIGO CON EL DEL FRAGMENTO PROPIO
                 case R.id.navigation_inicio:
-                    if (fm.findFragmentByTag("boton") == null) {
+                    //if (fm.findFragmentByTag("boton") == null) {
                         BotonFrag fragBoton = new BotonFrag();
                         transaction.replace(R.id.contFrag, fragBoton, "boton");
                         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                         transaction.addToBackStack(null);
                         transaction.commit();
-                    }
+                    //}
                     return true;
                 case R.id.navigation_mapa:
-                    if (fm.findFragmentByTag("mapa") == null) {
+                    //if (fm.findFragmentByTag("mapa") == null) {
                         MapaFrag fragMapa = new MapaFrag();
                         transaction.replace(R.id.contFrag, fragMapa, "mapa");
                         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                         transaction.addToBackStack(null);
                         transaction.commit();
-                    }
+                    //}
                     return true;
                 case R.id.navigation_reportes:
-                    if (fm.findFragmentByTag("reporte") == null){
+                    //if (fm.findFragmentByTag("reporte") == null){
                         ReporteFrag fragReporte = new ReporteFrag();
                         transaction.replace(R.id.contFrag,fragReporte,"reporte");
                         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                         transaction.addToBackStack(null);
                         transaction.commit();
-                    }
-
+                    //}
                     return true;
                 case R.id.navigation_guia:
-                    if (fm.findFragmentByTag("guia") == null) {
+                    //if (fm.findFragmentByTag("guia") == null) {
                         GuiaFrag fragGuia = new GuiaFrag();
                         transaction.replace(R.id.contFrag, fragGuia, "guia");
                         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                         transaction.addToBackStack(null);
                         transaction.commit();
-                    }
+                    //}
                     return true;
                 case R.id.navigation_settings:
-                    if (fm.findFragmentByTag("ajustes") == null) {
+                    //if (fm.findFragmentByTag("ajustes") == null) {
                         SettingsFrag fragSettings = new SettingsFrag();
                         transaction.replace(R.id.contFrag, fragSettings, "ajustes");
                         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                         transaction.addToBackStack(null);
                         transaction.commit();
-                    }
+                    //}
                     return true;
             }
             return false;
@@ -140,17 +139,21 @@ public class InicioActiv extends AppCompatActivity {
     public boolean checkPermission() {
 
         int CallPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE);
+        int ContactPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS);
+        int SMSPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS);
 
-        return CallPermissionResult == PackageManager.PERMISSION_GRANTED;
-
+        return CallPermissionResult == PackageManager.PERMISSION_GRANTED &&
+                ContactPermissionResult == PackageManager.PERMISSION_GRANTED &&
+                SMSPermissionResult == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
 
         ActivityCompat.requestPermissions(InicioActiv.this, new String[]
                 {
-                        Manifest.permission.CALL_PHONE
+                        Manifest.permission.CALL_PHONE,
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.SEND_SMS
                 }, PERMISSION_REQUEST_CODE);
-
     }
 }

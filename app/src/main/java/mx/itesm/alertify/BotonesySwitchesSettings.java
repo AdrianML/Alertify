@@ -1,5 +1,8 @@
 package mx.itesm.alertify;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,94 +21,40 @@ public class BotonesySwitchesSettings {
     private EditText etNombre;
     private EditText etNumber;
 
-    public void setsCallOption(View view, String name) {
-        if (name == "contact") {
-            sCallContact = (Switch) view;
-        } else if (name == "911") {
-            sCall911 = (Switch) view;
-        } else {
-            Log.i("ERROR", "Hubo un error");
-        }
+    public BotonesySwitchesSettings(){
+        /*settingsPrefs=PreferenceManager.getDefaultSharedPreferences(context);
+        settingsEditor=settingsPrefs.edit();
+
+        if(settingsPrefs.getBoolean("callDefault",false)) {
+            settingsEditor.putBoolean("callDefault", true);
+        }*/
     }
 
-    public Switch getsCallOption(String name) {
-        if (name == "contact") {
-            return sCallContact;
-        } else if (name == "911") {
-            return sCall911;
-        } else {
-            return null;
-        }
-    }
-
-    public void setEts(View view, String name) {
-        if (name == "numberPrincipal") {
-            etNumberPrincipal = (EditText) view;
-        } else if (name == "namePrincipal") {
-            etNombrePrincipal = (EditText) view;
-        } else if (name == "name") {
-            etNombre = (EditText) view;
-        } else if (name == "number") {
-            etNumber = (EditText) view;
-        }
-    }
-
-    public EditText getEts(String name) {
-        if (name == "numberPrincipal") {
-            return etNumberPrincipal;
-        } else if (name == "namePrincipal") {
-            return etNombrePrincipal;
-        } else if (name == "name") {
-            return etNombre;
-        } else if (name == "number") {
-            return etNumber;
-        } else {
-            return null;
-        }
-    }
-
-    public void setButtons(View view,String name){
-        if (name=="contacPrincipal"){
-            addPrincipalContact=(Button)view;
-        }
-
-        else if(name=="addContacto"){
-
-        }
-    }
-
-    public void isCheck(String name) {
-        if (name == "contact") {
-            getsCallOption("contact").setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    public void isCheck(final Switch callContact, final Switch call911, final EditText etNombrePrincipal, final SharedPreferences.Editor prefs) {
+        callContact.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (getsCallOption("contact").isChecked()) {
-                        Log.i("SE LLAMARA A", " " + getEts("namePrincipal").getText().toString().length());
-                        getsCallOption("contact").setChecked(true);
-                        getsCallOption("911").setChecked(false);
+                    if (callContact.isChecked()) {
+                        Log.i("SE LLAMARA A", " " + etNombrePrincipal.getText().toString().length());
+                        callContact.setChecked(true);
+                        call911.setChecked(false);
+                        prefs.putBoolean("callOption",false);
+                        prefs.apply();
                     }
                 }
             });
 
-        } else if (name == "911") {
-            getsCallOption("911").setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            call911.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (getsCallOption("911").isChecked()) {
+                    if (call911.isChecked()) {
                         Log.i("SE LLAMARA A", "911");
-                        getsCallOption("911").setChecked(true);
-                        getsCallOption("contact").setChecked(false);
+                        call911.setChecked(true);
+                        callContact.setChecked(false);
+                        prefs.putBoolean("callOption",true);
+                        prefs.apply();
                     }
                 }
             });
-        }
-    }
-
-    public Button getButtons(String name) {
-        if(name=="addPrincipal"){
-            return addPrincipalContact;
-        }
-
-        else return null;
     }
 }
