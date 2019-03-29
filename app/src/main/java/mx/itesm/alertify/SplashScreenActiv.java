@@ -29,13 +29,13 @@ public class SplashScreenActiv extends AppCompatActivity {
 
                 if (mPreferences.getBoolean("loginsuccesful", true))
                 {
-                    Intent intent = new Intent(SplashScreenActiv.this, LoginActiv.class);
+                    Intent intent = new Intent(SplashScreenActiv.this, InicioActiv.class);
                     startActivity(intent);
                 }
 
                 else
                 {
-                    Intent intent = new Intent(SplashScreenActiv.this, InicioActiv.class);
+                    Intent intent = new Intent(SplashScreenActiv.this, LoginActiv.class);
                     startActivity(intent);
                 }
 

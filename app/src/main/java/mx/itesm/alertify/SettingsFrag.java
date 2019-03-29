@@ -49,6 +49,9 @@ public class SettingsFrag extends Fragment {
     private Button addPrincipalContact;
     private Button saveMessage;
 
+    // SharedPreferences manager
+    private TinyDB tinyDB;
+
     public SettingsFrag() {
         // Required empty public constructor
     }
@@ -58,6 +61,9 @@ public class SettingsFrag extends Fragment {
                              Bundle savedInstanceState) {
 
         view=inflater.inflate(R.layout.fragment_settings,container,false);
+
+        // Inicialización del manager de las preferencias
+        tinyDB = new TinyDB(context);
 
         //Referencia a los campos de la pantalla
         buttonAndSwitchesManager = new BotonesySwitchesSettings();
