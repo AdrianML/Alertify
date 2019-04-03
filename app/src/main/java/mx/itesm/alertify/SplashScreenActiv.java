@@ -27,7 +27,7 @@ public class SplashScreenActiv extends AppCompatActivity {
             @Override
             public void run() {
 
-                if (mPreferences.getBoolean("loginsuccesful", true))
+                if (mPreferences.getBoolean("firstrun", true) && mPreferences.getBoolean("loginsuccesful", true))
                 {
                     Intent intent = new Intent(SplashScreenActiv.this, InicioActiv.class);
                     startActivity(intent);
@@ -35,6 +35,7 @@ public class SplashScreenActiv extends AppCompatActivity {
 
                 else
                 {
+                    mEditor.putBoolean("firstrun", false).commit();
                     Intent intent = new Intent(SplashScreenActiv.this, LoginActiv.class);
                     startActivity(intent);
                 }

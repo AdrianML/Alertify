@@ -63,7 +63,7 @@ public class SettingsFrag extends Fragment {
         view=inflater.inflate(R.layout.fragment_settings,container,false);
 
         // Inicialización del manager de las preferencias
-        tinyDB = new TinyDB(context);
+        tinyDB = new TinyDB(getContext());
 
         //Referencia a los campos de la pantalla
         buttonAndSwitchesManager = new BotonesySwitchesSettings();
