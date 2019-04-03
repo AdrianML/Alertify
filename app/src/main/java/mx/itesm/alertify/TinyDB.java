@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -330,29 +330,27 @@ public class TinyDB {
     }
 
 
-    public ArrayList<Object> getListObject(String key, Class<?> mClass){
-    	Gson gson = new Gson();
-
-    	ArrayList<String> objStrings = getListString(key);
-    	ArrayList<Object> objects =  new ArrayList<Object>();
-
-    	for(String jObjString : objStrings){
-    		Object value  = gson.fromJson(jObjString,  mClass);
-    		objects.add(value);
-    	}
-    	return objects;
-    }
+    //public ArrayList<Object> getListObject(String key, Class<?> mClass){
+    //	Gson gson = new Gson();
+//    	ArrayList<String> objStrings = getListString(key);
+    //	ArrayList<Object> objects =  new ArrayList<Object>();
+//
+    //	for(String jObjString : objStrings){
+    //		Object value  = gson.fromJson(jObjString,  mClass);
+    //		objects.add(value);
+    //	}
+//    }
     
 
     
-    public <T> T getObject(String key, Class<T> classOfT){
+    //public <T> T getObject(String key, Class<T> classOfT){
 
-        String json = getString(key);
-        Object value = new Gson().fromJson(json, classOfT);
-        if (value == null)
-            throw new NullPointerException();
-        return (T)value;
-    }
+        //String json = getString(key);
+        //Object value = new Gson().fromJson(json, classOfT);
+        //if (value == null)
+            //throw new NullPointerException();
+        //return (T)value;
+    //}
     
     
     // Put methods
