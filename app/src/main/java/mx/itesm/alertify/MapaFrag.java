@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -96,8 +97,8 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
 
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -116,13 +117,18 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
         googleMap.getUiSettings().setCompassEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true); // true to enable
 
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.596813, -99.226647)).title("Biblioteca ITESM CEM").snippet("Esto es una prueba"));
-        CameraPosition biblio = CameraPosition.builder().target(new LatLng(19.596813, -99.226647)).zoom(16).bearing(0).tilt(45).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(biblio));
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.596813, -99.226647)).title("ALERTA").snippet("Robo a mano armada"));
 
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.592617, -99.229584)).title("ALERTA").snippet("Intento de secuestro"));
+
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.595863, -99.225809)).title("ALERTA").snippet("Robo de vehículo"));
+
+        CameraPosition alerta1 = CameraPosition.builder().target(new LatLng(19.596813, -99.226647)).zoom(16).bearing(0).tilt(45).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(alerta1));
         ////
 
     }
+
 
 
     @Override
