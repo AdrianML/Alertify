@@ -1,13 +1,11 @@
 package mx.itesm.alertify;
 
-
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -16,16 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import mx.itesm.alertify.BotonesySwitchesSettings;
-
 import java.util.ArrayList;
-
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,69 +29,104 @@ public class SettingsFrag extends Fragment {
 
     private BotonesySwitchesSettings buttonAndSwitchesManager;
 
-    private View view;
-    private Context context;
-
-    private EditText etNumeroPrincipal;
     private EditText etNombrePrincipal;
     private EditText etNombre;
-    private EditText etNumero;
     private EditText etMensaje;
+    private TextView lstContactos;
 
     private Switch callContact;
     private Switch call911;
+    private Switch useMessages;
 
-    private Button addPrincipalContact;
-    private Button saveMessage;
+    private ArrayList<String> numerosContactosAnadidos;
+    private ArrayList<String> nombresContactosAnadidos;
+    private ArrayList<String> contactsApp;
+    private String contactNumber ;
 
-    // SharedPreferences manager
-    private TinyDB tinyDB;
+    private String nombreContactoPrincipal;
+    private String numeroContactoPrincipal;
+    private String mensaje;
 
     public SettingsFrag() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view=inflater.inflate(R.layout.fragment_settings,container,false);
+        //Referencia a la actividad contenedora del fragmento
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        // Inicialización del manager de las preferencias
-        tinyDB = new TinyDB(getContext());
-
-        //Referencia a los campos de la pantalla
+        //Referencia a los campos de la pantalla y al manager de Botones y Switches
         buttonAndSwitchesManager = new BotonesySwitchesSettings();
 
-        etNumeroPrincipal= view.findViewById(R.id.etNumeroPrincipal);
+        lstContactos= view.findViewById(R.id.lstContactos);
+        numerosContactosAnadidos =new ArrayList<>();
+        nombresContactosAnadidos =new ArrayList<>();
+        contactsApp =new ArrayList<>();
+
         etNombrePrincipal= view.findViewById(R.id.etNombrePrincipal);
         etNombre= view.findViewById(R.id.etNombre);
-        etNumero= view.findViewById(R.id.etNumero);
-        etMensaje=view.findViewById(R.id.etMensaje);
+        etMensaje= view.findViewById(R.id.etMensaje);
 
         callContact= view.findViewById(R.id.call_contact);
-        call911=view.findViewById(R.id.call_911);
+        call911= view.findViewById(R.id.call_911);
+        useMessages=view.findViewById(R.id.useMensajes);
 
-        addPrincipalContact=view.findViewById(R.id.addPrincipContactButton);
-        saveMessage=view.findViewById(R.id.saveMessageButton);
+        Button addPrincipalContact = view.findViewById(R.id.addPrincipContactButton);
+        Button saveMessage = view.findViewById(R.id.saveMessageButton);
+        Button addContact = view.findViewById(R.id.addNewContactButton);
+        Button testCallSMS = view.findViewById(R.id.testCallSMS);
 
-        //Referencia y metodo onclick para el boton de Definir Contacto Principal y boton Añadir contacto
-        addPrincipalContact=view.findViewById(R.id.addPrincipContactButton);
+        // Inicialización del manager de las preferencias
+        // SharedPreferences manager
+        TinyDB tinyDB = new TinyDB(getContext());
 
+        //Arrays para guardar datos de los contactos guardados en la aplicacion
+       // contactsNameArray = new ArrayList<>();
+        //contactsNumbersArray= new ArrayList<>();
+        AddContactstoArray(buttonAndSwitchesManager.contactsNameArray(),buttonAndSwitchesManager.contactsNumbersArray());
+
+        //Definir changeListener para switches, si uno esta activado, el otro debe desactivarse
+        buttonAndSwitchesManager.isCheck(callContact,call911,etNombrePrincipal);
+
+        //Referencia y metodo onclick para el boton de Definir Contacto Principal, Añadir contacto y Guardar mensaje
         addPrincipalContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etNumeroPrincipal.getText().toString().length()==0 || etNombrePrincipal.getText().toString().length()==0) {
+                if(etNombrePrincipal.getText().toString().length()==0) {
                     Log.i("Error:", "falta un dato para registrarse");
                 }
 
                 else{
-                    callContact.setText("Llamar a "+etNombrePrincipal.getText().toString());
-                    if(callContact.isChecked() && etNumeroPrincipal.getText().toString().length()!=0 && etNombrePrincipal.getText().toString().length()!=0) {
-                        call();
+                    int userExist,isNotAdded;
+
+                    userExist=buttonAndSwitchesManager.userExists(etNombrePrincipal,nombresContactosAnadidos,numerosContactosAnadidos,contactsApp);
+                    isNotAdded=buttonAndSwitchesManager.isNotAdded(etNombrePrincipal,numerosContactosAnadidos,nombresContactosAnadidos);
+
+                    if(userExist!=-1 && isNotAdded==-1) {
+                        nombresContactosAnadidos.add(etNombrePrincipal.getText().toString());
+                        numerosContactosAnadidos.add(buttonAndSwitchesManager.contactsNumbersArray().get(userExist));
+                        contactsApp.add(etNombrePrincipal.getText().toString() + " , " +
+                                buttonAndSwitchesManager.contactsNumbersArray().get(userExist) + "\n");
+
+                        numeroContactoPrincipal= buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
+                        nombreContactoPrincipal=etNombrePrincipal.getText().toString();
+
+                        Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
+
+                        refreshContactos();
+
+                        callContact.setChecked(true);
                     }
 
-                    Log.i("Numero: ", "" + etNumeroPrincipal.getText().toString() + "Nombre: " + etNombrePrincipal.getText().toString());
+                    else if(userExist!=-1 && isNotAdded!=-1) {
+                        numeroContactoPrincipal=buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
+                        nombreContactoPrincipal=etNombrePrincipal.getText().toString();
+                    }
+
+                    callContact.setText("Llamar a " + nombreContactoPrincipal);
                 }
             }
         });
@@ -104,48 +134,133 @@ public class SettingsFrag extends Fragment {
         saveMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etMensaje.getText().toString().length()==0 && etNumeroPrincipal.getText().toString().length()!=0){
-                    Log.i("Error:", "el mensaje esta vacio");
+                if (etMensaje.getText().toString().length() == 0) {
+                    Log.i("Error", "el mensaje esta vacio");
+                }
+
+                else {
+                    mensaje=etMensaje.getText().toString();
+                    Log.i("MENSAJE", "" + mensaje);
+
+                    useMessages.setChecked(true);
+                }
+            }
+        });
+
+        addContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(etNombre.getText().toString().length()!=0){
+                    int userExist,isNotAdded;
+
+                    userExist=buttonAndSwitchesManager.userExists(etNombre,nombresContactosAnadidos,numerosContactosAnadidos,contactsApp);
+                    isNotAdded=buttonAndSwitchesManager.isNotAdded(etNombre,numerosContactosAnadidos,nombresContactosAnadidos);
+
+                    Log.i("VALORES",""+etNombre.getText().toString()+" "+userExist+" "+isNotAdded);
+
+                    if(userExist!=-1 && isNotAdded==-1) {
+                        nombresContactosAnadidos.add(etNombre.getText().toString());
+                        numerosContactosAnadidos.add(buttonAndSwitchesManager.contactsNumbersArray().get(userExist));
+                        contactsApp.add(etNombre.getText().toString() + " , " +
+                                buttonAndSwitchesManager.contactsNumbersArray().get(userExist) + "\n");
+                        refreshContactos();
+                    }
+
+                    Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
                 }
 
                 else{
-                    Log.i("ENVIANDO:",""+etMensaje.getText().toString());
-                    sendSMS();
+                    Log.i("ERROR","ESCRIBE ALGO");
                 }
+            }
+        });
+
+
+        testCallSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(callContact.isChecked() && nombreContactoPrincipal!=null && numeroContactoPrincipal!= null){
+                    call();
+                }
+
+                else if(call911.isChecked()){
+                    call911();
+                }
+
+                if(etMensaje.getText().toString().length()!=0 && useMessages.isChecked()){
+                    for(int i=0;i<numerosContactosAnadidos.size();i++){
+                        sendSMS(numerosContactosAnadidos.get(i));
+                    }
+                }
+
             }
         });
 
         return view;
     }
 
-    public void sendSMS(){
-        final String SMS = etMensaje.getText().toString();
-        final String phoneNum = etNumeroPrincipal.getText().toString();
+    private void refreshContactos() {
+        lstContactos.setText("");
 
-        SmsManager smsManager = SmsManager.getDefault();
-
-//Send the SMS//
-
-        smsManager.sendTextMessage(phoneNum, null, SMS, null, null);
+        for(int i = 0; i< numerosContactosAnadidos.size(); i++){
+            lstContactos.append(nombresContactosAnadidos.get(i)+" , "+ numerosContactosAnadidos.get(i)+"\n");
+        }
     }
 
-    public void call()
-    {
-        final EditText phoneNumber = (EditText) view.findViewById(R.id.etNumeroPrincipal);
-        String phoneNum = phoneNumber.getText().toString();
+
+    //Metodo para enviar mensaje al contacto principal definido
+    public void sendSMS(String phone){
+        final String SMS = etMensaje.getText().toString();
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(phone, null, SMS, null, null);
+    }
+
+    //Metodo para hacer llada al usuario principal
+    public void call() {
+        String phoneNum = numeroContactoPrincipal;
+
         if(!TextUtils.isEmpty(phoneNum)) {
             String dial = "tel:" + phoneNum;
 
-//Make an Intent object of type intent.ACTION_CALL//
+            startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+        }
 
-            startActivity(new Intent(Intent.ACTION_CALL,
-
-//Extract the telephone number from the URI//
-
-                    Uri.parse(dial)));
-        }else {
+        else{
             Toast.makeText(getActivity(), "Please enter a valid telephone number", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void call911(){
+        String dial = "tel://911";
+
+        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+    }
+
+    //Metodo para añadir los contactos al array
+    public void AddContactstoArray(ArrayList<String> strings, ArrayList<String> stringArrayList){
+
+//Query the phone number table using the URI stored in CONTENT_URI//
+
+        Cursor cursor = Objects.requireNonNull(getActivity()).getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+
+        assert cursor != null;
+        while (cursor.moveToNext()) {
+
+//Get the display name for each contact//
+
+            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+
+//Get the phone number for each contact//
+
+            contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+//Add each display name and phone number to the Array//
+            buttonAndSwitchesManager.contactsNameArray().add(name);
+            buttonAndSwitchesManager.contactsNumbersArray().add(contactNumber);
+        }
+
+        cursor.close();
 
     }
 }
