@@ -7,6 +7,10 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.AndroidRuntimeException;
+import android.util.Log;
+import android.webkit.ConsoleMessage;
+
+import java.io.Console;
 
 public class SplashScreenActiv extends AppCompatActivity {
 
@@ -27,14 +31,16 @@ public class SplashScreenActiv extends AppCompatActivity {
             @Override
             public void run() {
 
-                if (mPreferences.getBoolean("firstrun", true) && mPreferences.getBoolean("loginsuccesful", true))
+                if (mPreferences.getBoolean("loginsuccesful", false))
                 {
+                    Log.i("Debug", "I got here");
                     Intent intent = new Intent(SplashScreenActiv.this, InicioActiv.class);
                     startActivity(intent);
                 }
 
                 else
                 {
+                    Log.i("Debug", "I got here2");
                     mEditor.putBoolean("firstrun", false).commit();
                     Intent intent = new Intent(SplashScreenActiv.this, LoginActiv.class);
                     startActivity(intent);
