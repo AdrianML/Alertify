@@ -96,7 +96,7 @@ public class SettingsFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 if(etNombrePrincipal.getText().toString().length()==0) {
-                    Log.i("Error:", "falta un dato para registrarse");
+                    Toast.makeText(getActivity(),"Error: falta un dato para registrarse",Toast.LENGTH_SHORT).show();
                 }
 
                 else{
@@ -114,7 +114,7 @@ public class SettingsFrag extends Fragment {
                         numeroContactoPrincipal= buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
                         nombreContactoPrincipal=etNombrePrincipal.getText().toString();
 
-                        Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
+                        //Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
 
                         refreshContactos();
 
@@ -135,12 +135,12 @@ public class SettingsFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 if (etMensaje.getText().toString().length() == 0) {
-                    Log.i("Error", "el mensaje esta vacio");
+                    Toast.makeText(getActivity(),"Error el mensaje esta vacio",Toast.LENGTH_SHORT).show();
                 }
 
                 else {
                     mensaje=etMensaje.getText().toString();
-                    Log.i("MENSAJE", "" + mensaje);
+                    Toast.makeText(getActivity(),"MENSAJE: "+ mensaje,Toast.LENGTH_SHORT).show();
 
                     useMessages.setChecked(true);
                 }
@@ -156,7 +156,7 @@ public class SettingsFrag extends Fragment {
                     userExist=buttonAndSwitchesManager.userExists(etNombre,nombresContactosAnadidos,numerosContactosAnadidos,contactsApp);
                     isNotAdded=buttonAndSwitchesManager.isNotAdded(etNombre,numerosContactosAnadidos,nombresContactosAnadidos);
 
-                    Log.i("VALORES",""+etNombre.getText().toString()+" "+userExist+" "+isNotAdded);
+                    //Log.i("VALORES",""+etNombre.getText().toString()+" "+userExist+" "+isNotAdded);
 
                     if(userExist!=-1 && isNotAdded==-1) {
                         nombresContactosAnadidos.add(etNombre.getText().toString());
@@ -166,11 +166,11 @@ public class SettingsFrag extends Fragment {
                         refreshContactos();
                     }
 
-                    Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
+                    //Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
                 }
 
                 else{
-                    Log.i("ERROR","ESCRIBE ALGO");
+                    Toast.makeText(getActivity(),"ERROR, ESCRIBE ALGO",Toast.LENGTH_SHORT).show();
                 }
             }
         });
