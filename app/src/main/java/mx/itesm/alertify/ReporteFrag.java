@@ -49,14 +49,6 @@ public class ReporteFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 subirReporte();
-                // Limpiar la pantalla después de subir el reporte.
-                etTitulo.setText("");
-                etFecha.setText("");
-                etHora.setText("");
-                etDesc.setText("");
-
-                //Toast.makeText(LupaActiv.this, "¡Ganaste en " + movimientos + " movimientos!", Toast.LENGTH_LONG).show();
-                Toast.makeText(getActivity(), "Reporte Enviado", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -69,10 +61,26 @@ public class ReporteFrag extends Fragment {
         String hora = etHora.getText().toString();
         String desc = etDesc.getText().toString();
 
-        Report newReport = new Report(titulo, fecha, hora, desc);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ruta = database.getReference("Reporte/" + titulo + "/"); //Tabla
-        ruta.setValue(newReport); //Contenido
+        if(!titulo.isEmpty() && !fecha.isEmpty() && !hora.isEmpty() && !desc.isEmpty()){
+            Report newReport = new Report(titulo, fecha, hora, desc);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ruta = database.getReference("Reporte/" + titulo + "/"); //Tabla
+            ruta.setValue(newReport); //Contenido
 
+            limpiarPantalla();
+        }
+        else {
+            Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public void limpiarPantalla(){
+        etTitulo.setText("");
+        etFecha.setText("");
+        etHora.setText("");
+        etDesc.setText("");
+
+        Toast.makeText(getActivity(), "Reporte Enviado", Toast.LENGTH_LONG).show();
     }
 }
