@@ -1,12 +1,17 @@
 package mx.itesm.alertify;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -16,17 +21,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import mx.itesm.alertify.R;
+import java.util.ArrayList;
 
 public class InicioActiv extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
-    private SharedPreferences prefs;
+    private TinyDB ajustes;
+    ArrayList<String> contactos;
+    ArrayList<String> numeros;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -37,56 +40,45 @@ public class InicioActiv extends AppCompatActivity {
             FragmentTransaction transaction = fm.beginTransaction();
 
             switch (item.getItemId()) {
-                //REEMPLAZAR CODIGO CON EL DEL FRAGMENTO PROPIO
                 case R.id.navigation_inicio:
-                    //if (fm.findFragmentByTag("boton") == null) {
-                    fm.popBackStackImmediate(null, fm.POP_BACK_STACK_INCLUSIVE);
+                    fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     BotonFrag fragBoton = new BotonFrag();
                     transaction.replace(R.id.contFrag, fragBoton, "boton");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    //}
                     return true;
                 case R.id.navigation_mapa:
-                    //if (fm.findFragmentByTag("mapa") == null) {
-                    fm.popBackStackImmediate(null, fm.POP_BACK_STACK_INCLUSIVE);
+                    fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     MapaFrag fragMapa = new MapaFrag();
                     transaction.replace(R.id.contFrag, fragMapa, "mapa");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    //}
                     return true;
                 case R.id.navigation_reportes:
-                    //if (fm.findFragmentByTag("reporte") == null){
-                    fm.popBackStackImmediate(null, fm.POP_BACK_STACK_INCLUSIVE);
+                    fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     ReporteFrag fragReporte = new ReporteFrag();
                     transaction.replace(R.id.contFrag,fragReporte,"reporte");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    //}
                     return true;
                 case R.id.navigation_guia:
-                    //if (fm.findFragmentByTag("guia") == null) {
-                    fm.popBackStackImmediate(null, fm.POP_BACK_STACK_INCLUSIVE);
+                    fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     GuiaFrag fragGuia = new GuiaFrag();
                     transaction.replace(R.id.contFrag, fragGuia, "guia");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    //}
                     return true;
                 case R.id.navigation_settings:
-                    //if (fm.findFragmentByTag("ajustes") == null) {
-                    fm.popBackStackImmediate(null, fm.POP_BACK_STACK_INCLUSIVE);
+                    fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     SettingsFrag fragSettings = new SettingsFrag();
                     transaction.replace(R.id.contFrag, fragSettings, "ajustes");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                    //}
                     return true;
             }
             return false;
@@ -98,8 +90,12 @@ public class InicioActiv extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio);
 
-        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=prefs.edit();
+        ajustes = new TinyDB(this);
+        contactos = new ArrayList<>();
+        numeros= new ArrayList<>();
+
+        SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= prefs.edit();
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkPermission()) {
@@ -115,7 +111,7 @@ public class InicioActiv extends AppCompatActivity {
             }
         }
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         FragmentManager fm = getSupportFragmentManager();
@@ -160,5 +156,48 @@ public class InicioActiv extends AppCompatActivity {
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.SEND_SMS
                 }, PERMISSION_REQUEST_CODE);
+    }
+
+    protected void onActivityResult(int RequestCode,int ResultCode,Intent data) {
+        super.onActivityResult(RequestCode, ResultCode, data);
+
+        if (data != null) {
+            Uri result = data.getData();
+
+            assert result != null;
+            @SuppressLint("Recycle") Cursor c = getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                    ContactsContract.CommonDataKinds.Phone._ID + "=?",
+                    new String[]{result.getLastPathSegment()}, null);
+
+            assert c != null;
+            if (c.getCount() >= 1 && c.moveToFirst()) {
+                final String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                final String nombre = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+
+                if(!ajustes.getListString("contactos").contains(nombre)){
+                    contactos.add(nombre);
+                    numeros.add(number);
+                }
+
+                else if(ajustes.getListString("contactos").contains(nombre)){
+                    contactos.remove(nombre);
+                    numeros.remove(contactos.indexOf(nombre));
+                    contactos.add(nombre);
+                    numeros.add(number);
+                }
+
+                ajustes.putListString("contactos",contactos);
+                ajustes.putListString("numeros",numeros);
+
+                Log.i("IMPRIMIENDO"," "+ajustes.getListString("contactos")+" "+ajustes.getListString("numeros"));
+
+                //AÑADIR INFORMACION A PREFERENCIAS CON EL NOMBRE DE ABAJO PARA QUE SIGA FUNCIONANDO EN SETTINGSFRAGS
+
+                //AÑADIR nombre a arreglo "contactos"
+                //AÑADIR number a arreglo "numeros"
+
+            }
+        }
     }
 }

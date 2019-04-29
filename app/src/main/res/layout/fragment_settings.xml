@@ -50,18 +50,11 @@
                 android:id="@+id/etNombrePrincipal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:editable="false"
                 android:ems="10"
                 android:gravity="center_vertical|center"
                 android:hint="Nombre"
                 android:inputType="textPersonName" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Ingresa el nombre como esta en tu lista de contactos"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <Button
                 android:id="@+id/addPrincipContactButton"
@@ -100,13 +93,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             <Switch
-                android:id="@+id/useTelegram"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Envíar por Telegram"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-            <Switch
                 android:id="@+id/useMensajes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -128,22 +114,6 @@
                 android:text="Compartir Localización"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|center"
-                android:text="AÑADIR NUEVO CONTACTO"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Ingresa el nombre como esta en tu lista de contactos"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
             <EditText
                 android:id="@+id/etNombre"
                 android:layout_width="match_parent"
@@ -153,19 +123,12 @@
                 android:hint="Nombre"
                 android:inputType="textPersonName" />
 
-            <Button
-                android:id="@+id/addNewContactButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Añadir" />
-
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|center"
-                android:text="CONTACTOS"
+                android:text="CONTACTOS REGISTRADOS"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -173,6 +136,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+            <Button
+                android:id="@+id/addNewContactButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Añadir" />
 
         </LinearLayout>
     </ScrollView>

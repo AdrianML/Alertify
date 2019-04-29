@@ -1,5 +1,7 @@
 package mx.itesm.alertify;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,7 +32,6 @@ public class SettingsFrag extends Fragment {
     private BotonesySwitchesSettings buttonAndSwitchesManager;
 
     private EditText etNombrePrincipal;
-    private EditText etNombre;
     private EditText etMensaje;
     private TextView lstContactos;
 
@@ -41,11 +42,14 @@ public class SettingsFrag extends Fragment {
     private ArrayList<String> numerosContactosAnadidos;
     private ArrayList<String> nombresContactosAnadidos;
     private ArrayList<String> contactsApp;
-    private String contactNumber ;
 
     private String nombreContactoPrincipal;
     private String numeroContactoPrincipal;
     private String mensaje;
+
+    private TinyDB ajustes;
+    private Context mContext;
+
 
     public SettingsFrag() {
         // Required empty public constructor
@@ -54,7 +58,6 @@ public class SettingsFrag extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         //Referencia a la actividad contenedora del fragmento
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
@@ -67,7 +70,6 @@ public class SettingsFrag extends Fragment {
         contactsApp =new ArrayList<>();
 
         etNombrePrincipal= view.findViewById(R.id.etNombrePrincipal);
-        etNombre= view.findViewById(R.id.etNombre);
         etMensaje= view.findViewById(R.id.etMensaje);
 
         callContact= view.findViewById(R.id.call_contact);
@@ -81,7 +83,7 @@ public class SettingsFrag extends Fragment {
 
         // Inicialización del manager de las preferencias
         // SharedPreferences manager
-        TinyDB tinyDB = new TinyDB(getContext());
+        final TinyDB tinyDB = new TinyDB(getContext());
 
         //Arrays para guardar datos de los contactos guardados en la aplicacion
        // contactsNameArray = new ArrayList<>();
@@ -93,9 +95,10 @@ public class SettingsFrag extends Fragment {
 
         //Referencia y metodo onclick para el boton de Definir Contacto Principal, Añadir contacto y Guardar mensaje
         addPrincipalContact.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if(etNombrePrincipal.getText().toString().length()==0) {
+            /*    if(etNombrePrincipal.getText().toString().length()==0) {
                     Toast.makeText(getActivity(),"Error: falta un dato para registrarse",Toast.LENGTH_SHORT).show();
                 }
 
@@ -121,13 +124,17 @@ public class SettingsFrag extends Fragment {
                         callContact.setChecked(true);
                     }
 
-                    else if(userExist!=-1 && isNotAdded!=-1) {
+                    else if(userExist != -1) {
                         numeroContactoPrincipal=buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
                         nombreContactoPrincipal=etNombrePrincipal.getText().toString();
                     }
 
                     callContact.setText("Llamar a " + nombreContactoPrincipal);
                 }
+            }
+*/
+              Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+              startActivityForResult(intent, 1);
             }
         });
 
@@ -150,28 +157,10 @@ public class SettingsFrag extends Fragment {
         addContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etNombre.getText().toString().length()!=0){
-                    int userExist,isNotAdded;
+                refreshContactos();
 
-                    userExist=buttonAndSwitchesManager.userExists(etNombre,nombresContactosAnadidos,numerosContactosAnadidos,contactsApp);
-                    isNotAdded=buttonAndSwitchesManager.isNotAdded(etNombre,numerosContactosAnadidos,nombresContactosAnadidos);
-
-                    //Log.i("VALORES",""+etNombre.getText().toString()+" "+userExist+" "+isNotAdded);
-
-                    if(userExist!=-1 && isNotAdded==-1) {
-                        nombresContactosAnadidos.add(etNombre.getText().toString());
-                        numerosContactosAnadidos.add(buttonAndSwitchesManager.contactsNumbersArray().get(userExist));
-                        contactsApp.add(etNombre.getText().toString() + " , " +
-                                buttonAndSwitchesManager.contactsNumbersArray().get(userExist) + "\n");
-                        refreshContactos();
-                    }
-
-                    //Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
-                }
-
-                else{
-                    Toast.makeText(getActivity(),"ERROR, ESCRIBE ALGO",Toast.LENGTH_SHORT).show();
-                }
+                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -179,6 +168,9 @@ public class SettingsFrag extends Fragment {
         testCallSMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Log.i("VALORES:" +tinyDB.getString("NOMBREPRINCIPAL"),tinyDB.getString("NUMEROPRINCIPAL"));
+
                 if(callContact.isChecked() && nombreContactoPrincipal!=null && numeroContactoPrincipal!= null){
                     call();
                 }
@@ -196,16 +188,18 @@ public class SettingsFrag extends Fragment {
             }
         });
 
+        refreshContactos();
+
         return view;
     }
 
     private void refreshContactos() {
         lstContactos.setText("");
 
-        for(int i = 0; i< numerosContactosAnadidos.size(); i++){
-            lstContactos.append(nombresContactosAnadidos.get(i)+" , "+ numerosContactosAnadidos.get(i)+"\n");
+        for(int i = 0; i< ajustes.getListString("contactos").size(); i++){
+            lstContactos.append(ajustes.getListString("contactos").get(i)+" , "+ ajustes.getListString("numeros").get(i)+"\n");
         }
-    }
+ }
 
 
     //Metodo para enviar mensaje al contacto principal definido
@@ -253,7 +247,7 @@ public class SettingsFrag extends Fragment {
 
 //Get the phone number for each contact//
 
-            contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
 //Add each display name and phone number to the Array//
             buttonAndSwitchesManager.contactsNameArray().add(name);
@@ -262,5 +256,18 @@ public class SettingsFrag extends Fragment {
 
         cursor.close();
 
+    }
+
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        mContext = activity;
+        //SharedPreferences Manager
+        ajustes = new TinyDB(mContext);
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        mContext = null;
     }
 }
