@@ -2,6 +2,7 @@ package mx.itesm.alertify;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -40,13 +41,12 @@ public class ReporteFrag extends Fragment {
     private EditText etDesc;
     private Button btnEnviar;
 
-    private int idReporte = 1;
+    private TinyDB tinyDB;
+    private int idReporte;
 
     private double latitude;
     private double longitude;
-
-    //SharedPreferences Manager
-    TinyDB tinyDB = new TinyDB(getContext());
+    private Context mContext;
 
     public ReporteFrag() {
         // Required empty public constructor
@@ -63,12 +63,13 @@ public class ReporteFrag extends Fragment {
         etDesc = v.findViewById(R.id.etDesc);
         btnEnviar = v.findViewById(R.id.btnEnviar);
 
+        idReporte = tinyDB.getInt("idReporte");
+
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("aviso", "Click");
                 subirReporte();
             }
         });
@@ -77,14 +78,12 @@ public class ReporteFrag extends Fragment {
     }
 
     public void subirReporte() {
-        Log.i("aviso", "estoy en subirReporte");
         String titulo = etTitulo.getText().toString();
         String fecha = etFecha.getText().toString();
         String hora = etHora.getText().toString();
         String desc = etDesc.getText().toString();
 
         LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Log.i("aviso", "Going in");
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -98,7 +97,6 @@ public class ReporteFrag extends Fragment {
             // for ActivityCompat#requestPermissions for more details.
 
         }
-        Log.i("aviso", "if 2");
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(location!= null){
             double longitude = location.getLongitude();
@@ -126,15 +124,26 @@ public class ReporteFrag extends Fragment {
 
             }
         };
-        Log.i("aviso", "salí");
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
 
 
         if(!titulo.isEmpty() && !fecha.isEmpty() && !hora.isEmpty() && !desc.isEmpty()){
             Report newReport = new Report(idReporte,titulo, fecha, hora, desc, latitude, longitude);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ruta = database.getReference("Reporte/" + idReporte + "/"); //Tabla
-            ruta.setValue(newReport); //Contenido
+
+            String email = tinyDB.getString("path");
+            String path = "";
+
+            for(int c = 0; c < email.length(); c++){
+                if(email.charAt(c) != '.'){
+                    path += email.charAt(c);
+                }
+            }
+            Log.i("email", email);
+            Log.i("path", path);
+            tinyDB.putInt("idReporte", idReporte);
+            DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
+            ruta.child("Reportes/" + tinyDB.getInt("idReporte")).setValue(newReport); //Contenido
 
             limpiarPantalla();
 
@@ -146,14 +155,29 @@ public class ReporteFrag extends Fragment {
     }
 
     public void limpiarPantalla(){
-        tinyDB.putInt("idReporte", idReporte);
         idReporte++;
+        tinyDB.putInt("idReporte", idReporte);
+
         etTitulo.setText("");
         etFecha.setText("");
         etHora.setText("");
         etDesc.setText("");
 
         Toast.makeText(getActivity(), "Reporte Enviado", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        mContext = activity;
+        //SharedPreferences Manager
+        tinyDB = new TinyDB(mContext);
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        mContext = null;
     }
 
 }

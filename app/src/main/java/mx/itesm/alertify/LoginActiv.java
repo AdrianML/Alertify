@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -73,6 +74,9 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
 
+    public String mEmail;
+   private TinyDB tinyDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +87,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
         handler = new Handler();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mEditor = mPreferences.edit();
-
+        tinyDB = new TinyDB(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -313,7 +317,6 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
@@ -327,6 +330,8 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                     path += email.charAt(c);
                 }
             }
+
+            tinyDB.putString("path", path);
 
             User newUser = new User(email, password);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
