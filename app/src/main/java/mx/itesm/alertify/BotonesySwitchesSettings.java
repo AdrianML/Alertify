@@ -1,44 +1,27 @@
 package mx.itesm.alertify;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
-import java.util.ArrayList;
+class BotonesySwitchesSettings {
 
-public class BotonesySwitchesSettings {
-
-    private ArrayList<String> contactsNameArray ;
-    private ArrayList<String> contactsNumbersArray;
-
-    public BotonesySwitchesSettings(){
-        contactsNameArray=new ArrayList<>();
-        contactsNumbersArray=new ArrayList<>();
+    BotonesySwitchesSettings(){
     }
 
-    public ArrayList<String> contactsNameArray(){
-        return contactsNameArray;
-    }
-
-    public ArrayList<String> contactsNumbersArray(){
-        return contactsNumbersArray;
-    }
-
-    public void isCheck(final Switch callContact, final Switch call911, final EditText etNombrePrincipal) {
+    void isCheck(final Switch callContact, final Switch call911, final TinyDB ajustes) {
         callContact.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (callContact.isChecked()) {
-                    Log.i("SE LLAMARA A", " " + etNombrePrincipal.getText().toString().length());
                     callContact.setChecked(true);
                     call911.setChecked(false);
+                    ajustes.putBoolean("callContact",true);
+                    ajustes.putBoolean("call911",false);
+                }
+
+                else{
+                    ajustes.putBoolean("callContact",false);
                 }
             }
         });
@@ -47,31 +30,102 @@ public class BotonesySwitchesSettings {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (call911.isChecked()) {
-                    Log.i("SE LLAMARA A", "911");
                     call911.setChecked(true);
                     callContact.setChecked(false);
+                    ajustes.putBoolean("callContact",false);
+                    ajustes.putBoolean("call911",true);
+                }
+
+                else {
+                    ajustes.putBoolean("call911", false);
                 }
             }
         });
     }
 
-    public int userExists(EditText etNombrePrincipal, ArrayList<String> nombresContactosAnadidos, ArrayList<String> numerosContactosAnadidos, ArrayList<String> contactsApp) {
-        for(int i=0;i<contactsNameArray.size();i++){
-            if(etNombrePrincipal.getText().toString().equals(contactsNameArray.get(i))) {
-                Log.i("USUARIO EXISTE",""+i);
-                return i; }
+    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, EditText etNombrePrincipal, EditText etMensaje, Switch useWhatsapp, Switch useMessages, Switch sendLocation) {
+        if(ajustes.getBoolean("callContact"))
+            callContact.setChecked(true);
+
+        else if(ajustes.getBoolean("call911"))
+            call911.setChecked(true);
+
+        if(ajustes.getString("contactPrincipal").length()!=0){
+            etNombrePrincipal.setText(ajustes.getString("contactPrincipal"));
+            callContact.setText("");
+            callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal"));
         }
-        return -1;
+
+        if(ajustes.getString("mensaje").length()!=0)
+            etMensaje.setText(ajustes.getString("mensaje"));
+
+        if(ajustes.getBoolean("useWhatsapp"))
+            useWhatsapp.setChecked(true);
+
+        if(ajustes.getBoolean("useMessages"))
+            useMessages.setChecked(true);
+
+        if(ajustes.getBoolean("sendLocation"))
+            sendLocation.setChecked(true);
+
     }
 
-    public int isNotAdded(EditText etNombrePrincipal, ArrayList<String> numerosContactosAnadidos, ArrayList<String> nombresContactosAnadidos) {
-        String temp;
 
-        for(int i = 0; i< numerosContactosAnadidos.size(); i++){
-            temp= nombresContactosAnadidos.get(i);
+    void isCheckShareOptions(final Switch sendLocation, final Switch useWhatsapp, final Switch useMessages, final EditText etMensaje, final TinyDB ajustes) {
+        sendLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (sendLocation.isChecked()) {
+                    sendLocation.setChecked(true);
+                    ajustes.putBoolean("sendLocation",true);
+                }
 
-            if(temp.equals(etNombrePrincipal.getText().toString())) { return i; }
+                else{
+                    ajustes.putBoolean("sendLocation",false);
+                }
+            }
+        });
+
+        useWhatsapp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (useWhatsapp.isChecked()) {
+                    useWhatsapp.setChecked(true);
+                    ajustes.putBoolean("useWhatsapp",true);
+
+                    checkMessage(ajustes,etMensaje);
+                }
+
+                else{
+                    ajustes.putBoolean("useWhatsapp",false);
+                }
+            }
+        });
+
+        useMessages.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (useMessages.isChecked()) {
+                    useMessages.setChecked(true);
+                    ajustes.putBoolean("useMessages",true);
+
+                    checkMessage(ajustes,etMensaje);
+                }
+
+                else{
+                    ajustes.putBoolean("useMessages",false);
+                }
+            }
+        });
+    }
+
+    private void checkMessage(TinyDB ajustes, EditText etMensaje){
+        if(ajustes.getString("mensaje").length()==0){
+            ajustes.putString("mensaje","Ayuda, esto es una alerta");
+            etMensaje.setText(ajustes.getString("mensaje"));
         }
-        return -1;
+
+        else
+            etMensaje.setText(ajustes.getString("mensaje"));
     }
 }

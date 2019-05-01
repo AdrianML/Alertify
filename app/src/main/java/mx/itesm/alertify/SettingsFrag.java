@@ -3,15 +3,12 @@ package mx.itesm.alertify;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.telephony.SmsManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +18,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -29,127 +25,75 @@ import java.util.Objects;
  */
 public class SettingsFrag extends Fragment {
 
-    private BotonesySwitchesSettings buttonAndSwitchesManager;
-
     private EditText etNombrePrincipal;
     private EditText etMensaje;
     private TextView lstContactos;
 
     private Switch callContact;
-    private Switch call911;
     private Switch useMessages;
-
-    private ArrayList<String> numerosContactosAnadidos;
-    private ArrayList<String> nombresContactosAnadidos;
-    private ArrayList<String> contactsApp;
-
-    private String nombreContactoPrincipal;
-    private String numeroContactoPrincipal;
-    private String mensaje;
 
     private TinyDB ajustes;
     private Context mContext;
 
-
     public SettingsFrag() {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Referencia a la actividad contenedora del fragmento
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        final View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         //Referencia a los campos de la pantalla y al manager de Botones y Switches
-        buttonAndSwitchesManager = new BotonesySwitchesSettings();
+        BotonesySwitchesSettings buttonAndSwitchesManager = new BotonesySwitchesSettings();
 
         lstContactos= view.findViewById(R.id.lstContactos);
-        numerosContactosAnadidos =new ArrayList<>();
-        nombresContactosAnadidos =new ArrayList<>();
-        contactsApp =new ArrayList<>();
 
         etNombrePrincipal= view.findViewById(R.id.etNombrePrincipal);
         etMensaje= view.findViewById(R.id.etMensaje);
 
         callContact= view.findViewById(R.id.call_contact);
-        call911= view.findViewById(R.id.call_911);
+        Switch call911 = view.findViewById(R.id.call_911);
         useMessages=view.findViewById(R.id.useMensajes);
+        Switch useWhatsapp = view.findViewById(R.id.useWhatsapp);
+        Switch sendLocation = view.findViewById(R.id.sendLocation);
+
 
         Button addPrincipalContact = view.findViewById(R.id.addPrincipContactButton);
         Button saveMessage = view.findViewById(R.id.saveMessageButton);
         Button addContact = view.findViewById(R.id.addNewContactButton);
-        Button testCallSMS = view.findViewById(R.id.testCallSMS);
 
-        // Inicialización del manager de las preferencias
-        // SharedPreferences manager
-        final TinyDB tinyDB = new TinyDB(getContext());
-
-        //Arrays para guardar datos de los contactos guardados en la aplicacion
-       // contactsNameArray = new ArrayList<>();
-        //contactsNumbersArray= new ArrayList<>();
-        AddContactstoArray(buttonAndSwitchesManager.contactsNameArray(),buttonAndSwitchesManager.contactsNumbersArray());
-
-        //Definir changeListener para switches, si uno esta activado, el otro debe desactivarse
-        buttonAndSwitchesManager.isCheck(callContact,call911,etNombrePrincipal);
+        //Definir changeListener para switches, si uno esta activado, el otro debe desactivars
+        buttonAndSwitchesManager.isCheck(callContact, call911,ajustes);
+        buttonAndSwitchesManager.isCheckShareOptions(sendLocation, useWhatsapp,useMessages,etMensaje,ajustes);
 
         //Referencia y metodo onclick para el boton de Definir Contacto Principal, Añadir contacto y Guardar mensaje
         addPrincipalContact.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-            /*    if(etNombrePrincipal.getText().toString().length()==0) {
-                    Toast.makeText(getActivity(),"Error: falta un dato para registrarse",Toast.LENGTH_SHORT).show();
-                }
 
-                else{
-                    int userExist,isNotAdded;
+                ajustes.putBoolean("addPrincipal",true);
 
-                    userExist=buttonAndSwitchesManager.userExists(etNombrePrincipal,nombresContactosAnadidos,numerosContactosAnadidos,contactsApp);
-                    isNotAdded=buttonAndSwitchesManager.isNotAdded(etNombrePrincipal,numerosContactosAnadidos,nombresContactosAnadidos);
-
-                    if(userExist!=-1 && isNotAdded==-1) {
-                        nombresContactosAnadidos.add(etNombrePrincipal.getText().toString());
-                        numerosContactosAnadidos.add(buttonAndSwitchesManager.contactsNumbersArray().get(userExist));
-                        contactsApp.add(etNombrePrincipal.getText().toString() + " , " +
-                                buttonAndSwitchesManager.contactsNumbersArray().get(userExist) + "\n");
-
-                        numeroContactoPrincipal= buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
-                        nombreContactoPrincipal=etNombrePrincipal.getText().toString();
-
-                        //Log.i("TAMAÑO"," "+ numerosContactosAnadidos.size()+" "+ nombresContactosAnadidos.size());
-
-                        refreshContactos();
-
-                        callContact.setChecked(true);
-                    }
-
-                    else if(userExist != -1) {
-                        numeroContactoPrincipal=buttonAndSwitchesManager.contactsNumbersArray().get(userExist);
-                        nombreContactoPrincipal=etNombrePrincipal.getText().toString();
-                    }
-
-                    callContact.setText("Llamar a " + nombreContactoPrincipal);
-                }
-            }
-*/
               Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
               startActivityForResult(intent, 1);
-            }
+       }
         });
 
         saveMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (etMensaje.getText().toString().length() == 0) {
-                    Toast.makeText(getActivity(),"Error el mensaje esta vacio",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Error el mensaje esta vacio",Toast.LENGTH_LONG).show();
                 }
 
                 else {
-                    mensaje=etMensaje.getText().toString();
-                    Toast.makeText(getActivity(),"MENSAJE: "+ mensaje,Toast.LENGTH_SHORT).show();
+                    ajustes.putString("mensaje",etMensaje.getText().toString());
+                    Toast.makeText(getActivity(),"Mensaje: "+ ajustes.getString("mensaje"),Toast.LENGTH_LONG).show();
 
                     useMessages.setChecked(true);
+
+                    //onClickWhatsApp(view);
                 }
             }
         });
@@ -157,38 +101,12 @@ public class SettingsFrag extends Fragment {
         addContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshContactos();
-
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent,1);
             }
         });
 
-
-        testCallSMS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Log.i("VALORES:" +tinyDB.getString("NOMBREPRINCIPAL"),tinyDB.getString("NUMEROPRINCIPAL"));
-
-                if(callContact.isChecked() && nombreContactoPrincipal!=null && numeroContactoPrincipal!= null){
-                    call();
-                }
-
-                else if(call911.isChecked()){
-                    call911();
-                }
-
-                if(etMensaje.getText().toString().length()!=0 && useMessages.isChecked()){
-                    for(int i=0;i<numerosContactosAnadidos.size();i++){
-                        sendSMS(numerosContactosAnadidos.get(i));
-                    }
-                }
-
-            }
-        });
-
-        refreshContactos();
+        buttonAndSwitchesManager.checkPreferences(ajustes,callContact, call911,etNombrePrincipal,etMensaje,useWhatsapp,useMessages,sendLocation);
 
         return view;
     }
@@ -201,61 +119,10 @@ public class SettingsFrag extends Fragment {
         }
  }
 
-
-    //Metodo para enviar mensaje al contacto principal definido
-    public void sendSMS(String phone){
-        final String SMS = etMensaje.getText().toString();
-
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(phone, null, SMS, null, null);
-    }
-
-    //Metodo para hacer llada al usuario principal
-    public void call() {
-        String phoneNum = numeroContactoPrincipal;
-
-        if(!TextUtils.isEmpty(phoneNum)) {
-            String dial = "tel:" + phoneNum;
-
-            startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
-        }
-
-        else{
-            Toast.makeText(getActivity(), "Please enter a valid telephone number", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void call911(){
-        String dial = "tel://911";
-
-        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
-    }
-
-    //Metodo para añadir los contactos al array
-    public void AddContactstoArray(ArrayList<String> strings, ArrayList<String> stringArrayList){
-
-//Query the phone number table using the URI stored in CONTENT_URI//
-
-        Cursor cursor = Objects.requireNonNull(getActivity()).getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-
-        assert cursor != null;
-        while (cursor.moveToNext()) {
-
-//Get the display name for each contact//
-
-            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-
-//Get the phone number for each contact//
-
-            String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-//Add each display name and phone number to the Array//
-            buttonAndSwitchesManager.contactsNameArray().add(name);
-            buttonAndSwitchesManager.contactsNumbersArray().add(contactNumber);
-        }
-
-        cursor.close();
-
+    private void showPrincipalContact() {
+        etNombrePrincipal.setText(ajustes.getString("contactPrincipal"));
+        callContact.setText("");
+        callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal"));
     }
 
     public void onAttach(Context activity) {
@@ -269,5 +136,42 @@ public class SettingsFrag extends Fragment {
     public void onDetach(){
         super.onDetach();
         mContext = null;
+    }
+
+    public void onClickWhatsApp(View view) {
+
+        PackageManager pm=Objects.requireNonNull(getActivity()).getPackageManager();
+        try {
+
+            Intent waIntent = new Intent(Intent.ACTION_SEND);
+            waIntent.setType("text/plain");
+            String text = "YOUR TEXT HERE";
+
+            PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
+            //Check if package exists or not. If not then code
+            //in catch block will be called
+            waIntent.setPackage("com.whatsapp");
+
+            waIntent.putExtra(Intent.EXTRA_TEXT, text);
+            startActivity(Intent.createChooser(waIntent, "Share with"));
+
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(getActivity(), "WhatsApp not Installed", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void onResume() {
+        super.onResume();
+
+        refreshContactos();
+        showPrincipalContact();
+        principalAdd();
+    }
+
+    private void principalAdd() {
+        if(ajustes.getBoolean("callContact"))
+            callContact.setChecked(true);
     }
 }

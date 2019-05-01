@@ -28,8 +28,8 @@ public class InicioActiv extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
     private TinyDB ajustes;
-    ArrayList<String> contactos;
-    ArrayList<String> numeros;
+    private ArrayList<String> contactos;
+    private ArrayList<String> numeros;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -59,7 +59,7 @@ public class InicioActiv extends AppCompatActivity {
                 case R.id.navigation_reportes:
                     fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     ReporteFrag fragReporte = new ReporteFrag();
-                    transaction.replace(R.id.contFrag,fragReporte,"reporte");
+                    transaction.replace(R.id.contFrag, fragReporte, "reporte");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
@@ -91,16 +91,14 @@ public class InicioActiv extends AppCompatActivity {
         setContentView(R.layout.activity_inicio);
 
         ajustes = new TinyDB(this);
-        contactos = new ArrayList<>();
-        numeros= new ArrayList<>();
 
         SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor= prefs.edit();
+        SharedPreferences.Editor editor = prefs.edit();
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkPermission()) {
                 Log.e("permission", "Permission already granted.");
-                editor.putInt("permiso",1);
+                editor.putInt("permiso", 1);
                 editor.apply();
 
             } else {
@@ -118,7 +116,7 @@ public class InicioActiv extends AppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
         BotonFrag fragBoton = new BotonFrag();
 
-        transaction.replace(R.id.contFrag,fragBoton);
+        transaction.replace(R.id.contFrag, fragBoton);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         transaction.addToBackStack(null);
         transaction.commit();
@@ -128,13 +126,9 @@ public class InicioActiv extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
-        if(fm.getBackStackEntryCount() > 1){
+        if (fm.getBackStackEntryCount() > 1) {
             fm.popBackStack();
         }
-        /*else{
-            super.onBackPressed();
-        }*/
-
     }
 
     public boolean checkPermission() {
@@ -158,7 +152,7 @@ public class InicioActiv extends AppCompatActivity {
                 }, PERMISSION_REQUEST_CODE);
     }
 
-    protected void onActivityResult(int RequestCode,int ResultCode,Intent data) {
+    protected void onActivityResult(int RequestCode, int ResultCode, Intent data) {
         super.onActivityResult(RequestCode, ResultCode, data);
 
         if (data != null) {
@@ -171,31 +165,38 @@ public class InicioActiv extends AppCompatActivity {
                     new String[]{result.getLastPathSegment()}, null);
 
             assert c != null;
+
             if (c.getCount() >= 1 && c.moveToFirst()) {
                 final String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 final String nombre = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                if(!ajustes.getListString("contactos").contains(nombre)){
-                    contactos.add(nombre);
-                    numeros.add(number);
+                if (ajustes.getListString("contactos").size() != 0) {
+                    contactos = ajustes.getListString("contactos");
+                    numeros = ajustes.getListString("numeros");
+
+                    if (ajustes.getListString("contactos").contains(nombre)) {
+                        numeros.remove(contactos.indexOf(nombre));
+                        contactos.remove(nombre);
+                    }
+                } else if (ajustes.getListString("contactos").size() == 0) {
+                    contactos = new ArrayList<>();
+                    numeros = new ArrayList<>();
                 }
 
-                else if(ajustes.getListString("contactos").contains(nombre)){
-                    contactos.remove(nombre);
-                    numeros.remove(contactos.indexOf(nombre));
-                    contactos.add(nombre);
-                    numeros.add(number);
+                contactos.add(nombre);
+                numeros.add(number);
+
+                ajustes.putListString("contactos", contactos);
+                ajustes.putListString("numeros", numeros);
+
+                if(ajustes.getBoolean("addPrincipal")){
+                    ajustes.putString("contactPrincipal", nombre);
+                    ajustes.putString("numeroPrincipal", number);
+                    ajustes.putBoolean("addPrincipal",false);
+                    ajustes.putBoolean("callContact",true);
                 }
 
-                ajustes.putListString("contactos",contactos);
-                ajustes.putListString("numeros",numeros);
-
-                Log.i("IMPRIMIENDO"," "+ajustes.getListString("contactos")+" "+ajustes.getListString("numeros"));
-
-                //AÑADIR INFORMACION A PREFERENCIAS CON EL NOMBRE DE ABAJO PARA QUE SIGA FUNCIONANDO EN SETTINGSFRAGS
-
-                //AÑADIR nombre a arreglo "contactos"
-                //AÑADIR number a arreglo "numeros"
+                //Log.i("REQUEST",""+RequestCode);
 
             }
         }
