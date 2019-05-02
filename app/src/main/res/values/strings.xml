@@ -29,4 +29,25 @@
     <string name="ajustes">Ajustes</string>
     <string name="title_activity_inicio_activ2">InicioActiv2</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="logocuenta">logoCuenta</string>
+    <string name="logout">Logout</string>
+    <string name="enviar_por_whatsapp">Envíar por WhatsApp</string>
+    <string name="llamar_a_911">Llamar a 911</string>
+    <string name="enviar_por_app_de_mensajes">Envíar por App de Mensajes</string>
+    <string name="cuenta">Cuenta</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="anadir">Añadir</string>
+    <string name="contactos">Contactos</string>
+    <string name="compartir_localizacion">Compartir Localización</string>
+    <string name="localizacion">Localización</string>
+    <string name="llamadas">Llamadas</string>
+    <string name="mensajes">Mensajes</string>
+    <string name="maximo_200_caracteres">Máximo 200 caracteres</string>
+    <string name="registra_tu_mensaje_de_alerta">Registra tu mensaje de alerta</string>
+    <string name="todo">TODO</string>
+    <string name="anade_un_contacto_principal_para_esta_opcion">Añade un contacto principal para esta opción</string>
+    <string name="guardar_mensaje">Guardar Mensaje</string>
+    <string name="llamar_a">Llamar a</string>
+    <string name="anadir_contacto_principal">Añadir Contacto Principal</string>
 </resources>

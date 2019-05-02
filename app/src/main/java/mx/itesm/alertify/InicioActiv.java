@@ -2,7 +2,6 @@ package mx.itesm.alertify;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -170,35 +170,73 @@ public class InicioActiv extends AppCompatActivity {
                 final String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 final String nombre = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                if (ajustes.getListString("contactos").size() != 0) {
-                    contactos = ajustes.getListString("contactos");
-                    numeros = ajustes.getListString("numeros");
-
-                    if (ajustes.getListString("contactos").contains(nombre)) {
-                        numeros.remove(contactos.indexOf(nombre));
-                        contactos.remove(nombre);
-                    }
-                } else if (ajustes.getListString("contactos").size() == 0) {
-                    contactos = new ArrayList<>();
-                    numeros = new ArrayList<>();
+                if(ajustes.getBoolean("addPrincipal")) {
+                   addPrincipal(nombre,number);
                 }
 
-                contactos.add(nombre);
-                numeros.add(number);
-
-                ajustes.putListString("contactos", contactos);
-                ajustes.putListString("numeros", numeros);
-
-                if(ajustes.getBoolean("addPrincipal")){
-                    ajustes.putString("contactPrincipal", nombre);
-                    ajustes.putString("numeroPrincipal", number);
-                    ajustes.putBoolean("addPrincipal",false);
-                    ajustes.putBoolean("callContact",true);
+                if(ajustes.getBoolean("addContact")){
+                    addContact(nombre,number);
                 }
 
-                //Log.i("REQUEST",""+RequestCode);
-
+                if(ajustes.getBoolean("deleteContact")){
+                    deleteContact(nombre,number);
+                }
             }
         }
+        ajustes.putBoolean("addPrincipal",false);
+        ajustes.putBoolean("addContact",false);
+        ajustes.putBoolean("deleteContact",false);
+    }
+
+    private void deleteContact(String nombre, String number) {
+        if (ajustes.getListString("contactos").size() != 0) {
+            contactos = ajustes.getListString("contactos");
+            numeros = ajustes.getListString("numeros");
+
+            if (ajustes.getListString("contactos").contains(nombre)) {
+                if(ajustes.getString("contactPrincipal").equals(nombre) && ajustes.getString("numeroPrincipal").equals(number)){
+                    ajustes.putString("contactPrincipal","");
+                    ajustes.putString("numeroPrincipal","");
+                    ajustes.putBoolean("callContact",false);
+                    Toast.makeText(this,"Contacto principal eliminado",Toast.LENGTH_LONG).show();
+                    }
+
+                numeros.remove(contactos.indexOf(nombre));
+                contactos.remove(nombre);
+            }
+        }
+
+        ajustes.putListString("contactos", contactos);
+        ajustes.putListString("numeros", numeros);
+    }
+
+    private void addContact(String nombre, String number) {
+        if (ajustes.getListString("contactos").size() != 0) {
+            contactos = ajustes.getListString("contactos");
+            numeros = ajustes.getListString("numeros");
+
+            if (ajustes.getListString("contactos").contains(nombre)) {
+                numeros.remove(contactos.indexOf(nombre));
+                contactos.remove(nombre);
+            }
+        }
+        else if (ajustes.getListString("contactos").size() == 0) {
+            contactos = new ArrayList<>();
+            numeros = new ArrayList<>();
+        }
+
+        contactos.add(nombre);
+        numeros.add(number);
+
+        ajustes.putListString("contactos", contactos);
+        ajustes.putListString("numeros", numeros);
+    }
+
+    private void addPrincipal(String nombre, String number) {
+        addContact(nombre,number);
+
+        ajustes.putString("contactPrincipal", nombre);
+        ajustes.putString("numeroPrincipal", number);
+        ajustes.putBoolean("callContact",true);
     }
 }

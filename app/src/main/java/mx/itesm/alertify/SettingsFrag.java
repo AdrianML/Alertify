@@ -20,20 +20,21 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SettingsFrag extends Fragment {
 
-    private EditText etNombrePrincipal;
     private EditText etMensaje;
     private TextView lstContactos;
-
+    private  TextView tvCuenta;
     private Switch callContact;
     private Switch useMessages;
-
     private TinyDB ajustes;
+    private TinyDB tinyDB;
     private Context mContext;
+
+    private BotonesySwitchesSettings buttonAndSwitchesManager;
+    private Switch useWhatsapp;
+    private Switch sendLocation;
+    private Switch call911;
 
     public SettingsFrag() {
     }
@@ -45,70 +46,87 @@ public class SettingsFrag extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         //Referencia a los campos de la pantalla y al manager de Botones y Switches
-        BotonesySwitchesSettings buttonAndSwitchesManager = new BotonesySwitchesSettings();
+        buttonAndSwitchesManager = new BotonesySwitchesSettings();
 
         lstContactos= view.findViewById(R.id.lstContactos);
-
-        etNombrePrincipal= view.findViewById(R.id.etNombrePrincipal);
         etMensaje= view.findViewById(R.id.etMensaje);
+        tvCuenta = view.findViewById(R.id.tvCuenta);
 
         callContact= view.findViewById(R.id.call_contact);
-        Switch call911 = view.findViewById(R.id.call_911);
+        call911 = view.findViewById(R.id.call_911);
         useMessages=view.findViewById(R.id.useMensajes);
-        Switch useWhatsapp = view.findViewById(R.id.useWhatsapp);
-        Switch sendLocation = view.findViewById(R.id.sendLocation);
-
+        useWhatsapp = view.findViewById(R.id.useWhatsapp);
+        sendLocation = view.findViewById(R.id.sendLocation);
 
         Button addPrincipalContact = view.findViewById(R.id.addPrincipContactButton);
         Button saveMessage = view.findViewById(R.id.saveMessageButton);
         Button addContact = view.findViewById(R.id.addNewContactButton);
+        Button deleteContact = view.findViewById(R.id.deleteContactButton);
+        Button logout = view.findViewById(R.id.logOutButton);
 
         //Definir changeListener para switches, si uno esta activado, el otro debe desactivars
         buttonAndSwitchesManager.isCheck(callContact, call911,ajustes);
         buttonAndSwitchesManager.isCheckShareOptions(sendLocation, useWhatsapp,useMessages,etMensaje,ajustes);
 
         //Referencia y metodo onclick para el boton de Definir Contacto Principal, Añadir contacto y Guardar mensaje
-        addPrincipalContact.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
+        addPrincipalContact.setOnClickListener(new View.OnClickListener() {@SuppressLint("SetTextI18n") @Override
             public void onClick(View v) {
-
                 ajustes.putBoolean("addPrincipal",true);
-
-              Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-              startActivityForResult(intent, 1);
-       }
-        });
-
-        saveMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (etMensaje.getText().toString().length() == 0) {
-                    Toast.makeText(getActivity(),"Error el mensaje esta vacio",Toast.LENGTH_LONG).show();
-                }
-
-                else {
-                    ajustes.putString("mensaje",etMensaje.getText().toString());
-                    Toast.makeText(getActivity(),"Mensaje: "+ ajustes.getString("mensaje"),Toast.LENGTH_LONG).show();
-
-                    useMessages.setChecked(true);
-
-                    //onClickWhatsApp(view);
-                }
+                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+                startActivityForResult(intent, 1);
             }
         });
 
-        addContact.setOnClickListener(new View.OnClickListener() {
-            @Override
+        addContact.setOnClickListener(new View.OnClickListener() {@Override
             public void onClick(View v) {
+                ajustes.putBoolean("addContact",true);
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent,1);
             }
         });
 
-        buttonAndSwitchesManager.checkPreferences(ajustes,callContact, call911,etNombrePrincipal,etMensaje,useWhatsapp,useMessages,sendLocation);
+        deleteContact.setOnClickListener(new View.OnClickListener() {@Override
+            public void onClick(View v) {
+                ajustes.putBoolean("deleteContact",true);
+                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+                startActivityForResult(intent,1);
+            }
+        });
 
+        saveMessage.setOnClickListener(new View.OnClickListener() {@Override
+            public void onClick(View v) {
+                if (etMensaje.getText().toString().length() == 0) {
+                    Toast.makeText(getActivity(),"Error el mensaje esta vacio",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    ajustes.putString("mensaje",etMensaje.getText().toString());
+                    Toast.makeText(getActivity(),"Mensaje: "+ ajustes.getString("mensaje"),Toast.LENGTH_LONG).show();
+
+                    useMessages.setChecked(true);
+                }
+            }
+        });
+
+        logout.setOnClickListener(new View.OnClickListener() {@Override
+            public void onClick(View v) {
+            ajustes.clear();
+            tinyDB.clear();
+            Intent intInicio = new Intent(getActivity(),LoginActiv.class);
+            startActivity(intInicio);
+            }
+        });
+
+        getActivity().setTitle("Ajustes");
         return view;
+    }
+
+    private void setPreferences(){
+        buttonAndSwitchesManager.checkPreferences(ajustes,callContact,call911,useWhatsapp,useMessages,sendLocation,etMensaje,tvCuenta,tinyDB);
+
+        if(callContact.isChecked() && ajustes.getString("contactPrincipal").length()==0 && ajustes.getString("numeroPrincipal").length()==0){
+            callContact.setChecked(false);
+
+        }
     }
 
     private void refreshContactos() {
@@ -120,9 +138,8 @@ public class SettingsFrag extends Fragment {
  }
 
     private void showPrincipalContact() {
-        etNombrePrincipal.setText(ajustes.getString("contactPrincipal"));
         callContact.setText("");
-        callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal"));
+        callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));
     }
 
     public void onAttach(Context activity) {
@@ -130,6 +147,7 @@ public class SettingsFrag extends Fragment {
         mContext = activity;
         //SharedPreferences Manager
         ajustes = new TinyDB(mContext);
+        tinyDB = new TinyDB(mContext);
     }
 
     @Override
@@ -138,33 +156,11 @@ public class SettingsFrag extends Fragment {
         mContext = null;
     }
 
-    public void onClickWhatsApp(View view) {
-
-        PackageManager pm=Objects.requireNonNull(getActivity()).getPackageManager();
-        try {
-
-            Intent waIntent = new Intent(Intent.ACTION_SEND);
-            waIntent.setType("text/plain");
-            String text = "YOUR TEXT HERE";
-
-            PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
-            //Check if package exists or not. If not then code
-            //in catch block will be called
-            waIntent.setPackage("com.whatsapp");
-
-            waIntent.putExtra(Intent.EXTRA_TEXT, text);
-            startActivity(Intent.createChooser(waIntent, "Share with"));
-
-        } catch (PackageManager.NameNotFoundException e) {
-            Toast.makeText(getActivity(), "WhatsApp not Installed", Toast.LENGTH_SHORT)
-                    .show();
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     public void onResume() {
         super.onResume();
 
+        setPreferences();
         refreshContactos();
         showPrincipalContact();
         principalAdd();

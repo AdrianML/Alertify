@@ -3,6 +3,8 @@ package mx.itesm.alertify;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 class BotonesySwitchesSettings {
 
@@ -14,10 +16,17 @@ class BotonesySwitchesSettings {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (callContact.isChecked()) {
-                    callContact.setChecked(true);
-                    call911.setChecked(false);
-                    ajustes.putBoolean("callContact",true);
-                    ajustes.putBoolean("call911",false);
+                    if(ajustes.getString("contactPrincipal").length()!=0 && ajustes.getString("numeroPrincipal").length()!=0) {
+                        callContact.setChecked(true);
+                        call911.setChecked(false);
+                        ajustes.putBoolean("callContact", true);
+                        ajustes.putBoolean("call911", false);
+                    }
+
+                    else{
+                        callContact.setChecked(false);
+                        call911.setChecked(false);
+                    }
                 }
 
                 else{
@@ -43,7 +52,7 @@ class BotonesySwitchesSettings {
         });
     }
 
-    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, EditText etNombrePrincipal, EditText etMensaje, Switch useWhatsapp, Switch useMessages, Switch sendLocation) {
+    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, Switch useWhatsapp, Switch useMessages, Switch sendLocation, EditText etMensaje, TextView tvCuenta, TinyDB tinyDB) {
         if(ajustes.getBoolean("callContact"))
             callContact.setChecked(true);
 
@@ -51,9 +60,8 @@ class BotonesySwitchesSettings {
             call911.setChecked(true);
 
         if(ajustes.getString("contactPrincipal").length()!=0){
-            etNombrePrincipal.setText(ajustes.getString("contactPrincipal"));
             callContact.setText("");
-            callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal"));
+            callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));
         }
 
         if(ajustes.getString("mensaje").length()!=0)
@@ -67,6 +75,8 @@ class BotonesySwitchesSettings {
 
         if(ajustes.getBoolean("sendLocation"))
             sendLocation.setChecked(true);
+
+        tvCuenta.setText("Cuenta: "+tinyDB.getString("path"));
 
     }
 
