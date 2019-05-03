@@ -62,8 +62,7 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        getActivity().setTitle("Mapa");
     }
 
     @Override
