@@ -1,15 +1,20 @@
 package mx.itesm.alertify;
 
+import android.app.IntentService;
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +45,27 @@ public class BotonFrag extends Fragment{
                         ajustes.getString("contactPrincipal")!=null &&
                         ajustes.getString("numeroPrincipal")!= null){
                     call();
+
+                    PackageManager pm=Objects.requireNonNull(getActivity()).getPackageManager();
+                    try {
+
+                        Intent waIntent = new Intent(Intent.ACTION_SEND);
+                        waIntent.setType("text/plain");
+                        String text = "YOUR TEXT HERE";
+
+                        PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
+                        //Check if package exists or not. If not then code
+                        //in catch block will be called
+                        waIntent.setPackage("com.whatsapp");
+
+                        waIntent.putExtra(Intent.EXTRA_TEXT, text);
+                        startActivity(Intent.createChooser(waIntent, "Share with"));
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        Toast.makeText(getActivity(), "WhatsApp not Installed", Toast.LENGTH_LONG).show();
+                    }
+
+                    onClickWhatsApp(getView());
                 }
 
                 else if(ajustes.getBoolean("call911")){
@@ -51,8 +77,6 @@ public class BotonFrag extends Fragment{
                         sendSMS(ajustes.getListString("numeros").get(i));
                         }
                 }
-
-                openWhatsApp(getView());
             }
         });
 
@@ -105,47 +129,6 @@ public void onDetach(){
 
     public void onClickWhatsApp(View view) {
 
-        PackageManager pm=Objects.requireNonNull(getActivity()).getPackageManager();
-        try {
-
-            Intent waIntent = new Intent(Intent.ACTION_SEND);
-            waIntent.setType("text/plain");
-            String text = "YOUR TEXT HERE";
-
-            PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
-            //Check if package exists or not. If not then code
-            //in catch block will be called
-            waIntent.setPackage("com.whatsapp");
-
-            waIntent.putExtra(Intent.EXTRA_TEXT, text);
-            startActivity(Intent.createChooser(waIntent, "Share with"));
-
-        } catch (PackageManager.NameNotFoundException e) {
-            Toast.makeText(getActivity(), "WhatsApp not Installed", Toast.LENGTH_LONG).show();
-        }
     }
-
-    public void Whatsapp2(View view){
-        Uri uri = Uri.parse("smsto:" + "5531331899");
-        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
-        i.putExtra("sms_body", "mensaje");
-        i.setPackage("com.whatsapp");
-        startActivity(i);
-    }
-
-    private void openWhatsApp(View view){
-            try {
-                String text = "hola";
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.setType("text/plain");
-                sendIntent.putExtra(Intent.EXTRA_STREAM, text);
-                startActivity(sendIntent);
-            } catch (NoSuchMethodError | IllegalArgumentException | NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
 }
