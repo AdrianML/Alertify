@@ -79,9 +79,18 @@ public class ReporteFrag extends Fragment implements  LocationListener{
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double latitud = posicion.getLatitude();
-                double longitud = posicion.getLongitude();
-                subirReporte(latitud, longitud);
+
+                if (!gps.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Toast.makeText(getActivity(), "Favor de prender el GPS.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    double latitud = posicion.getLatitude();
+                    double longitud = posicion.getLongitude();
+
+                    subirReporte(latitud, longitud);
+                }
+
+
             }
         });
 
