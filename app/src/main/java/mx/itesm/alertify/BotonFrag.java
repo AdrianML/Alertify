@@ -51,6 +51,8 @@ public class BotonFrag extends Fragment{
                         sendSMS(ajustes.getListString("numeros").get(i));
                         }
                 }
+
+                openWhatsApp(getView());
             }
         });
 
@@ -122,5 +124,28 @@ public void onDetach(){
             Toast.makeText(getActivity(), "WhatsApp not Installed", Toast.LENGTH_LONG).show();
         }
     }
+
+    public void Whatsapp2(View view){
+        Uri uri = Uri.parse("smsto:" + "5531331899");
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.putExtra("sms_body", "mensaje");
+        i.setPackage("com.whatsapp");
+        startActivity(i);
+    }
+
+    private void openWhatsApp(View view){
+            try {
+                String text = "hola";
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.setType("text/plain");
+                sendIntent.putExtra(Intent.EXTRA_STREAM, text);
+                startActivity(sendIntent);
+            } catch (NoSuchMethodError | IllegalArgumentException | NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
 }
