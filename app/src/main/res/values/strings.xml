@@ -50,4 +50,8 @@
     <string name="guardar_mensaje">Guardar Mensaje</string>
     <string name="llamar_a">Llamar a</string>
     <string name="anadir_contacto_principal">Añadir Contacto Principal</string>
+    <string name="llamar_usando_whatsapp">Llamar usando whatsapp</string>
+    <string name="si_desactivas_esta_opci_n_no_se_veran_tus_alertas_en_el_mapa">Si desactivas esta opción, no se veran tus alertas en el mapa</string>
+    <string name="asegurate_de_que_tu_contacto_tenga_whatsapp_para_esta_opci_n">Asegurate de que tu contacto tenga whatsapp para esta opción</string>
+    <string name="se_te_mostrar_una_opci_n_para_seleccionar_a_los_contactos">*Se te mostrará una opción para seleccionar a los contactos</string>
 </resources>

@@ -4,7 +4,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 class BotonesySwitchesSettings {
 
@@ -76,7 +75,7 @@ class BotonesySwitchesSettings {
         if(ajustes.getBoolean("sendLocation"))
             sendLocation.setChecked(true);
 
-        tvCuenta.setText("Cuenta: "+tinyDB.getString("path"));
+        tvCuenta.setText(tinyDB.getString("path"));
 
     }
 
