@@ -2,17 +2,24 @@ package mx.itesm.alertify;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,20 +40,21 @@ import static android.support.v4.content.ContextCompat.getSystemService;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ReporteFrag extends Fragment {
-
+public class ReporteFrag extends Fragment implements  LocationListener{
+    public Criteria criteria;
+    public String bestProvider;
     private EditText etTitulo;
     private EditText etFecha;
     private EditText etHora;
     private EditText etDesc;
     private Button btnEnviar;
-
     private TinyDB tinyDB;
     private int idReporte;
+    private Location posicion;
+    private LocationManager gps;
 
-    private double latitude;
-    private double longitude;
     private Context mContext;
+    private static final int PERMISO_GPS = 200;
 
     public ReporteFrag() {
         // Required empty public constructor
@@ -67,68 +75,30 @@ public class ReporteFrag extends Fragment {
 
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
+
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                subirReporte();
+                double latitud = posicion.getLatitude();
+                double longitud = posicion.getLongitude();
+                subirReporte(latitud, longitud);
             }
         });
+
+        getActivity().setTitle("Reportes");
+        configurarGPS();
 
         return v;
     }
 
-    public void subirReporte() {
+    public void subirReporte(double lat, double lng) {
         String titulo = etTitulo.getText().toString();
         String fecha = etFecha.getText().toString();
         String hora = etHora.getText().toString();
         String desc = etDesc.getText().toString();
 
-        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.i("aviso", "if 1");
-            // TO DO
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-        }
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if(location!= null){
-            double longitude = location.getLongitude();
-            double latitude = location.getLatitude();
-        }
-
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                longitude = location.getLongitude();
-                latitude = location.getLatitude();
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-
-
         if(!titulo.isEmpty() && !fecha.isEmpty() && !hora.isEmpty() && !desc.isEmpty()){
-            Report newReport = new Report(idReporte,titulo, fecha, hora, desc, latitude, longitude);
+            Report newReport = new Report(idReporte,titulo, fecha, hora, desc, lat, lng);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
             String email = tinyDB.getString("path");
@@ -180,4 +150,82 @@ public class ReporteFrag extends Fragment {
         mContext = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Prueba si tiene permiso para acceder al gps
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            // No lo tiene, solicitar el permiso
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISO_GPS);
+            // Contestará con onRequestPermissionsResult...
+        } else {
+            // Ya tiene permiso, iniciar actualizaciones
+            gps.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+        }
+    }
+    private void configurarGPS() {
+        // Crea el administrador del gps
+        gps = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        // Pregunta si está prendido el GPS en el sistema
+        if (!gps.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            // Abrir Settings para prender el GPS, no se puede hacer con código
+            prenderGPS();
+        }
+    }
+
+    private void prenderGPS() {
+        // El usuario lo debe encender, no se puede con programación
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("El GPS está apagado, ¿Quieres prenderlo?")
+                .setCancelable(false)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new
+                                Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)); // Abre settings
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISO_GPS && grantResults.length>0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Contestó que SI, otorga el permiso. Iniciar actualizaciones.
+                gps.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            } else {
+                Log.i("onRequestPerm...","Contestó NO, indicarle cómo dar permiso...");
+            }
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        posicion = location;
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }
