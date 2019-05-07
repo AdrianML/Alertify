@@ -10,12 +10,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -39,6 +42,15 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import mx.itesm.alertify.R;
 
@@ -49,6 +61,8 @@ import static android.content.Context.LOCATION_SERVICE;
  * A simple {@link Fragment} subclass.
  */
 public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationListener {
+
+    private ArrayList<Alerta> arrReportes; //Datos para la lista de reportes
 
     GoogleMap mGoogleMap;
     MapView mMapView;
@@ -63,6 +77,57 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("Mapa");
+        arrReportes = new ArrayList<>();
+    }
+
+    private void descargarReportes(final GoogleMap googleMap) {
+
+        mGoogleMap = googleMap;
+
+        FirebaseDatabase bd = FirebaseDatabase.getInstance();
+        DatabaseReference ruta = bd.getReference("/User/");
+        Log.i("RUTA: ", ruta.toString());
+
+        ruta.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                arrReportes.clear();
+
+                for(DataSnapshot user: dataSnapshot.getChildren()) {
+                    HashMap dUser = (HashMap) user.getValue();
+                    Log.i("HASHMAP: ", dUser.toString());
+
+                    Log.i("CHUCHO: ", dUser.get("Reportes")+"");
+
+                    ArrayList<HashMap> reportes = (ArrayList<HashMap>) dUser.get("Reportes");
+                    Log.i("REPORTE: ", reportes.get(0).get("titulo")+"");
+
+                    for(int i=0; i<reportes.size(); i++){
+                        String titulo = reportes.get(i).get("titulo").toString();
+                        Double latitud = Double.parseDouble(reportes.get(i).get("latitud").toString());
+                        Double longitud = Double.parseDouble(reportes.get(i).get("longitud").toString());
+                        Alerta nuevaAlerta = new Alerta(titulo, latitud, longitud);
+                        arrReportes.add(nuevaAlerta);
+
+                    }
+                    for( Alerta s : arrReportes){
+                        Log.i("ARR REPORTES: ", s.toString());
+                    }
+
+                }
+                //Crear pins
+
+                for(Alerta al: arrReportes){
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(al.getLatitud(), al.getLongitud())).title("ALERTA").snippet(al.getTitulo()));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -121,6 +186,8 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
         googleMap.addMarker(new MarkerOptions().position(new LatLng(19.592617, -99.229584)).title("ALERTA").snippet("Intento de secuestro"));
 
         googleMap.addMarker(new MarkerOptions().position(new LatLng(19.595863, -99.225809)).title("ALERTA").snippet("Robo de vehículo"));
+
+        descargarReportes(googleMap);
 
         CameraPosition alerta1 = CameraPosition.builder().target(new LatLng(19.596813, -99.226647)).zoom(16).bearing(0).tilt(45).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(alerta1));

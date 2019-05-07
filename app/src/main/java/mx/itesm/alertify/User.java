@@ -1,9 +1,12 @@
 package mx.itesm.alertify;
 
+import java.util.ArrayList;
+
 public class User {
 
     private String email;
     private String password;
+    private ArrayList<Alerta> reportes;
 
     public User(String email, String password){
         this.email = email;
