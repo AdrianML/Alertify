@@ -329,7 +329,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
+        //TODO: Replace this with your own logic.
         return email.contains("@") & email.contains(".");
     }
 
