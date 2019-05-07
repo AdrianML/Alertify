@@ -2,6 +2,7 @@ package mx.itesm.alertify;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +21,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import com.google.firebase.auth.FirebaseUser;
+
+import com.google.firebase.FirebaseApiNotAvailableException;
 
 import java.util.ArrayList;
 
@@ -28,8 +31,9 @@ public class InicioActiv extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
     private TinyDB ajustes;
-    private ArrayList<String> contactos;
-    private ArrayList<String> numeros;
+    ArrayList<String> contactos;
+    ArrayList<String> numeros;
+    private FirebaseUser usuario;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -59,7 +63,7 @@ public class InicioActiv extends AppCompatActivity {
                 case R.id.navigation_reportes:
                     fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     ReporteFrag fragReporte = new ReporteFrag();
-                    transaction.replace(R.id.contFrag, fragReporte, "reporte");
+                    transaction.replace(R.id.contFrag,fragReporte,"reporte");
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     transaction.addToBackStack(null);
                     transaction.commit();
@@ -91,14 +95,16 @@ public class InicioActiv extends AppCompatActivity {
         setContentView(R.layout.activity_inicio);
 
         ajustes = new TinyDB(this);
+        contactos = new ArrayList<>();
+        numeros= new ArrayList<>();
 
         SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor editor= prefs.edit();
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkPermission()) {
                 Log.e("permission", "Permission already granted.");
-                editor.putInt("permiso", 1);
+                editor.putInt("permiso",1);
                 editor.apply();
 
             } else {
@@ -116,7 +122,7 @@ public class InicioActiv extends AppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
         BotonFrag fragBoton = new BotonFrag();
 
-        transaction.replace(R.id.contFrag, fragBoton);
+        transaction.replace(R.id.contFrag,fragBoton);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         transaction.addToBackStack(null);
         transaction.commit();
@@ -126,9 +132,13 @@ public class InicioActiv extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.getBackStackEntryCount() > 1) {
+        if(fm.getBackStackEntryCount() > 1){
             fm.popBackStack();
         }
+        /*else{
+            super.onBackPressed();
+        }*/
+
     }
 
     public boolean checkPermission() {
@@ -152,7 +162,7 @@ public class InicioActiv extends AppCompatActivity {
                 }, PERMISSION_REQUEST_CODE);
     }
 
-    protected void onActivityResult(int RequestCode, int ResultCode, Intent data) {
+    protected void onActivityResult(int RequestCode,int ResultCode,Intent data) {
         super.onActivityResult(RequestCode, ResultCode, data);
 
         if (data != null) {
@@ -165,78 +175,34 @@ public class InicioActiv extends AppCompatActivity {
                     new String[]{result.getLastPathSegment()}, null);
 
             assert c != null;
-
             if (c.getCount() >= 1 && c.moveToFirst()) {
                 final String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 final String nombre = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                if(ajustes.getBoolean("addPrincipal")) {
-                   addPrincipal(nombre,number);
+                if(!ajustes.getListString("contactos").contains(nombre)){
+                    Log.i("List: ", ajustes.getListString("contactos").toString());
+                    contactos.add(nombre);
+                    numeros.add(number);
                 }
 
-                if(ajustes.getBoolean("addContact")){
-                    addContact(nombre,number);
+                else if(ajustes.getListString("contactos").contains(nombre)){
+                    contactos.remove(nombre);
+                    numeros.remove(contactos.indexOf(nombre));
+                    contactos.add(nombre);
+                    numeros.add(number);
                 }
 
-                if(ajustes.getBoolean("deleteContact")){
-                    deleteContact(nombre,number);
-                }
+                ajustes.putListString("contactos",contactos);
+                ajustes.putListString("numeros",numeros);
+
+                Log.i("IMPRIMIENDO"," "+ajustes.getListString("contactos")+" "+ajustes.getListString("numeros"));
+
+                //AÑADIR INFORMACION A PREFERENCIAS CON EL NOMBRE DE ABAJO PARA QUE SIGA FUNCIONANDO EN SETTINGSFRAGS
+
+                //AÑADIR nombre a arreglo "contactos"
+                //AÑADIR number a arreglo "numeros"
+
             }
         }
-        ajustes.putBoolean("addPrincipal",false);
-        ajustes.putBoolean("addContact",false);
-        ajustes.putBoolean("deleteContact",false);
-    }
-
-    private void deleteContact(String nombre, String number) {
-        if (ajustes.getListString("contactos").size() != 0) {
-            contactos = ajustes.getListString("contactos");
-            numeros = ajustes.getListString("numeros");
-
-            if (ajustes.getListString("contactos").contains(nombre)) {
-                if(ajustes.getString("contactPrincipal").equals(nombre) && ajustes.getString("numeroPrincipal").equals(number)){
-                    ajustes.putString("contactPrincipal","");
-                    ajustes.putString("numeroPrincipal","");
-                    ajustes.putBoolean("callContact",false);
-                    Toast.makeText(this,"Contacto principal eliminado",Toast.LENGTH_LONG).show();
-                    }
-
-                numeros.remove(contactos.indexOf(nombre));
-                contactos.remove(nombre);
-            }
-        }
-
-        ajustes.putListString("contactos", contactos);
-        ajustes.putListString("numeros", numeros);
-    }
-
-    private void addContact(String nombre, String number) {
-        if (ajustes.getListString("contactos").size() != 0) {
-            contactos = ajustes.getListString("contactos");
-            numeros = ajustes.getListString("numeros");
-
-            if (ajustes.getListString("contactos").contains(nombre)) {
-                numeros.remove(contactos.indexOf(nombre));
-                contactos.remove(nombre);
-            }
-        }
-        else if (ajustes.getListString("contactos").size() == 0) {
-            contactos = new ArrayList<>();
-            numeros = new ArrayList<>();
-        }
-
-        contactos.add(nombre);
-        numeros.add(number);
-
-        ajustes.putListString("contactos", contactos);
-        ajustes.putListString("numeros", numeros);
-    }
-
-    private void addPrincipal(String nombre, String number) {
-        addContact(nombre,number);
-
-        ajustes.putString("contactPrincipal", nombre);
-        ajustes.putString("numeroPrincipal", number);
-        ajustes.putBoolean("callContact",true);
     }
 }
