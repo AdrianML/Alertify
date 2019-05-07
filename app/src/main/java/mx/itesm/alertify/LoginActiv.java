@@ -246,8 +246,11 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                                 startActivity(intInicio);
                             } else {
                                 // If sign in fails, display a message to the user.
-                                Toast.makeText(LoginActiv.this, "Authentication failed",
+                                showProgress(false);
+                                Toast.makeText(LoginActiv.this, "Email already in use.",
                                         Toast.LENGTH_SHORT).show();
+                                mPasswordView.setError("Authentication failed, try again.");
+                                mPasswordView.requestFocus();
                             }
                         }
                     });
