@@ -284,6 +284,36 @@
                 android:maxLength="200"
                 android:importantForAutofill="no" />
 
+            <TextView
+                android:id="@+id/textViewMensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal|start"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="40dp"
+                android:includeFontPadding="false"
+                android:text="Registra tu mensaje de cancelación"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Switch"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/etMensajeCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal|start"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:ems="10"
+                android:hint="@string/maximo_200_caracteres"
+                android:importantForAutofill="no"
+                android:includeFontPadding="false"
+                android:inputType="textMultiLine"
+                android:maxLength="200"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Switch" />
+
             <Button
                 android:id="@+id/saveMessageButton"
                 style="?android:attr/buttonBarButtonStyle"

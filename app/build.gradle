@@ -35,4 +35,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation files('libs/gson-2.4.jar')
+
+    implementation 'br.com.simplepass:loading-button-android:1.7.2'
 }
