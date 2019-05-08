@@ -86,7 +86,9 @@ public class BotonFrag extends Fragment{
                         @Override
                         protected String doInBackground(String... params) {
                             try {
-                                Thread.sleep(2000);
+                                sosButton.setEnabled(false);
+                                sosButton.setClickable(false);
+                                Thread.sleep(1000);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -97,6 +99,8 @@ public class BotonFrag extends Fragment{
                         protected void onPostExecute(String s) {
                             if (s.equals("done")) {
                                 sosButton.setText("Presiona para cancelar...");
+                                sosButton.setEnabled(true);
+                                sosButton.setClickable(true);
                                 timer2.start();
                             }
                         }
