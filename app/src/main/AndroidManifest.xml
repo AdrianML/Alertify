@@ -40,7 +40,9 @@
 
         <activity
             android:name=".LoginActiv"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
         <activity
             android:name=".InicioActiv"
             android:label="@string/app_name"
