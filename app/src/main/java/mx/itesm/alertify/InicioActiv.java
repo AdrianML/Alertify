@@ -158,7 +158,8 @@ public class InicioActiv extends AppCompatActivity {
                 {
                         Manifest.permission.CALL_PHONE,
                         Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.SEND_SMS
+                        Manifest.permission.SEND_SMS,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 }, PERMISSION_REQUEST_CODE);
     }
 

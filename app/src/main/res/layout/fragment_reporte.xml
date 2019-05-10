@@ -41,6 +41,12 @@
                     android:hint="Título" />
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -48,13 +54,67 @@
 
                 <EditText
                     android:id="@+id/etFecha"
-                    android:layout_width="wrap_content"
+                    android:layout_width="97dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="Fecha DD/MM/AAAA"
+                    android:hint="DD"
                     android:inputType="date"
-                    android:maxLength="10" />
+                    android:maxLength="2"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="/"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <EditText
+                    android:id="@+id/etFecha2"
+                    android:layout_width="89dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="MM"
+                    android:inputType="date"
+                    android:maxLength="2"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="/"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <EditText
+                    android:id="@+id/etFecha3"
+                    android:layout_width="156dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="AAAA"
+                    android:inputType="date"
+                    android:maxLength="4"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hora" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/etHora"
@@ -62,11 +122,30 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="Hora 00:00"
+                    android:hint="hh"
                     android:inputType="time"
-                    android:maxLength="5"
+                    android:maxLength="2"
                     android:textAlignment="center" />
 
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text=":"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <EditText
+                    android:id="@+id/etHora2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="mm"
+                    android:inputType="time"
+                    android:maxLength="2"
+                    android:textAlignment="center" />
             </LinearLayout>
 
             <android.support.design.widget.TextInputLayout

@@ -41,11 +41,12 @@ import static android.support.v4.content.ContextCompat.getSystemService;
  * A simple {@link Fragment} subclass.
  */
 public class ReporteFrag extends Fragment implements  LocationListener{
-    public Criteria criteria;
-    public String bestProvider;
     private EditText etTitulo;
     private EditText etFecha;
+    private EditText etFecha2;
+    private EditText etFecha3;
     private EditText etHora;
+    private EditText etHora2;
     private EditText etDesc;
     private Button btnEnviar;
     private TinyDB tinyDB;
@@ -67,14 +68,17 @@ public class ReporteFrag extends Fragment implements  LocationListener{
         View v = inflater.inflate(R.layout.fragment_reporte, container, false);
         etTitulo = v.findViewById(R.id.etTitulo);
         etFecha = v.findViewById(R.id.etFecha);
+        etFecha2 = v.findViewById(R.id.etFecha2);
+        etFecha3 = v.findViewById(R.id.etFecha3);
         etHora = v.findViewById(R.id.etHora);
+        etHora2 = v.findViewById(R.id.etHora2);
         etDesc = v.findViewById(R.id.etDesc);
         btnEnviar = v.findViewById(R.id.btnEnviar);
 
         idReporte = tinyDB.getInt("idReporte");
 
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
+        configurarGPS();
 
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,10 +88,7 @@ public class ReporteFrag extends Fragment implements  LocationListener{
                     Toast.makeText(getActivity(), "Favor de prender el GPS.", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    double latitud = posicion.getLatitude();
-                    double longitud = posicion.getLongitude();
-
-                    subirReporte(latitud, longitud);
+                    subirReporte();
                 }
 
 
@@ -95,19 +96,25 @@ public class ReporteFrag extends Fragment implements  LocationListener{
         });
 
         getActivity().setTitle("Reportes");
-        configurarGPS();
 
         return v;
     }
-
-    public void subirReporte(double lat, double lng) {
+    //double lat, double lng
+    public void subirReporte() {
+        double lat = posicion.getLatitude();
+        double lng = posicion.getLongitude();
         String titulo = etTitulo.getText().toString();
-        String fecha = etFecha.getText().toString();
+        String dd = etFecha.getText().toString();
+        String mm = etFecha2.getText().toString();
+        String aaaa = etFecha3.getText().toString();
+        String fecha = dd + "/" + mm + "/" + aaaa;
         String hora = etHora.getText().toString();
+        String min = etHora2.getText().toString();
+        String horaMin = etHora.getText().toString()+":"+etHora2.getText().toString();
         String desc = etDesc.getText().toString();
 
-        if(!titulo.isEmpty() && !fecha.isEmpty() && !hora.isEmpty() && !desc.isEmpty()){
-            Report newReport = new Report(idReporte,titulo, fecha, hora, desc, lat, lng);
+        if(!titulo.isEmpty() && !dd.isEmpty() && !mm.isEmpty() && !aaaa.isEmpty() && !hora.isEmpty() && !min.isEmpty() && !desc.isEmpty()){
+            Report newReport = new Report(idReporte,titulo, fecha, horaMin, desc, lat, lng);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
             String email = tinyDB.getString("path");
