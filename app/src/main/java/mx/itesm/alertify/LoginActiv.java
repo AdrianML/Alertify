@@ -232,7 +232,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                                 // Sign in success, update UI with the signed-in user's information
                                 user = mAuth.getCurrentUser();
 
-                                Report newReport = new Report(0,null, null, null, null, 90.00, 0.0);
+                                Report newReport = new Report(0,"", "", "", "", 90.00, 0.0);
 
                                 String path = "";
 
