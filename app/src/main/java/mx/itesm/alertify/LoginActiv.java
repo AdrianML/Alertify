@@ -232,6 +232,8 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                                 // Sign in success, update UI with the signed-in user's information
                                 user = mAuth.getCurrentUser();
 
+                                Report newReport = new Report(0,null, null, null, null, 90.00, 0.0);
+
                                 String path = "";
 
 
@@ -248,7 +250,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
                                 ruta.setValue(newUser); //Contenido
-
+                                ruta.child("Reportes/0").setValue(newReport);
                                 mEditor.putBoolean("loginsuccesful", true).commit();
                                 Intent intInicio = new Intent(getBaseContext(), InicioActiv.class);
                                 startActivity(intInicio);

@@ -118,8 +118,6 @@ public class ReporteFrag extends Fragment implements  LocationListener{
                     path += email.charAt(c);
                 }
             }
-            Log.i("email", email);
-            Log.i("path", path);
             tinyDB.putInt("idReporte", idReporte);
             DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
             ruta.child("Reportes/" + tinyDB.getInt("idReporte")).setValue(newReport); //Contenido
