@@ -21,6 +21,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import com.google.firebase.FirebaseApiNotAvailableException;
@@ -180,30 +182,73 @@ public class InicioActiv extends AppCompatActivity {
                 final String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 final String nombre = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                if(!ajustes.getListString("contactos").contains(nombre)){
-                    Log.i("List: ", ajustes.getListString("contactos").toString());
-                    contactos.add(nombre);
-                    numeros.add(number);
+                if(ajustes.getBoolean("addPrincipal")) {
+                    addPrincipal(nombre,number);
                 }
 
-                else if(ajustes.getListString("contactos").contains(nombre)){
-                    contactos.remove(nombre);
-                    numeros.remove(contactos.indexOf(nombre));
-                    contactos.add(nombre);
-                    numeros.add(number);
+                if(ajustes.getBoolean("addContact")){
+                    addContact(nombre,number);
                 }
 
-                ajustes.putListString("contactos",contactos);
-                ajustes.putListString("numeros",numeros);
-
-                Log.i("IMPRIMIENDO"," "+ajustes.getListString("contactos")+" "+ajustes.getListString("numeros"));
-
-                //AÑADIR INFORMACION A PREFERENCIAS CON EL NOMBRE DE ABAJO PARA QUE SIGA FUNCIONANDO EN SETTINGSFRAGS
-
-                //AÑADIR nombre a arreglo "contactos"
-                //AÑADIR number a arreglo "numeros"
-
+                if(ajustes.getBoolean("deleteContact")){
+                    deleteContact(nombre,number);
+                }
             }
         }
+        ajustes.putBoolean("addPrincipal",false);
+        ajustes.putBoolean("addContact",false);
+        ajustes.putBoolean("deleteContact",false);
+    }
+
+    private void deleteContact(String nombre, String number) {
+        if (ajustes.getListString("contactos").size() != 0) {
+            contactos = ajustes.getListString("contactos");
+            numeros = ajustes.getListString("numeros");
+
+            if (ajustes.getListString("contactos").contains(nombre)) {
+                if(ajustes.getString("contactPrincipal").equals(nombre) && ajustes.getString("numeroPrincipal").equals(number)){
+                    ajustes.putString("contactPrincipal","");
+                    ajustes.putString("numeroPrincipal","");
+                    ajustes.putBoolean("callContact",false);
+                    Toast.makeText(this,"Contacto principal eliminado",Toast.LENGTH_LONG).show();
+                }
+
+                numeros.remove(contactos.indexOf(nombre));
+                contactos.remove(nombre);
+            }
+        }
+
+        ajustes.putListString("contactos", contactos);
+        ajustes.putListString("numeros", numeros);
+    }
+
+    private void addContact(String nombre, String number) {
+        if (ajustes.getListString("contactos").size() != 0) {
+            contactos = ajustes.getListString("contactos");
+            numeros = ajustes.getListString("numeros");
+
+            if (ajustes.getListString("contactos").contains(nombre)) {
+                numeros.remove(contactos.indexOf(nombre));
+                contactos.remove(nombre);
+            }
+        }
+        else if (ajustes.getListString("contactos").size() == 0) {
+            contactos = new ArrayList<>();
+            numeros = new ArrayList<>();
+        }
+
+        contactos.add(nombre);
+        numeros.add(number);
+
+        ajustes.putListString("contactos", contactos);
+        ajustes.putListString("numeros", numeros);
+    }
+
+    private void addPrincipal(String nombre, String number) {
+        addContact(nombre,number);
+
+        ajustes.putString("contactPrincipal", nombre);
+        ajustes.putString("numeroPrincipal", number);
+        ajustes.putBoolean("callContact",true);
     }
 }

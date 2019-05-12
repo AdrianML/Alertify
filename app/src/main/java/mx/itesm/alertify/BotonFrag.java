@@ -101,6 +101,7 @@ public class BotonFrag extends Fragment{
                                 sosButton.setText("Presiona para cancelar...");
                                 sosButton.setEnabled(true);
                                 sosButton.setClickable(true);
+                                sosButton.setTextSize(30);
                                 timer2.start();
                             }
                         }
@@ -117,8 +118,13 @@ public class BotonFrag extends Fragment{
                     clicked=0;
                     tiempo=15;
                     timerTV.setText("");
+                    sosButton.setTextSize(60);
                     timer2.cancel();
-
+                    if(ajustes.getBoolean("useMessages") && ajustes.getListString("contactos").size()!=0 && tiempo<10) {
+                        sendCancelSMS();
+                        Toast.makeText(getActivity(), "Mensaje de cancelación enviado, alerta cancelada", Toast.LENGTH_LONG)
+                                .show();
+                    }
                 }
 
             }
@@ -129,8 +135,23 @@ public class BotonFrag extends Fragment{
         return v;
     }
 
+    public void sendCancelSMS() {
+
+        for(int i=0;i<ajustes.getListString("numeros").size();i++){
+            sendCancel(ajustes.getListString("numeros").get(i));
+        }
+
+    }
+
+    private void sendCancel(String numeros) {
+        final String SMS = ajustes.getString("mensajeCancel");
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(numeros, null, SMS, null, null);
+    }
+
     private void doActions(int tiempo) {
-        if(tiempo==10 && ajustes.getString("mensaje").length()!=0 && ajustes.getBoolean("useMessages")){
+        if(tiempo==10 && ajustes.getString("mensaje").length()!=0 && ajustes.getBoolean("useMessages") && ajustes.getListString("contactos").size()!=0){
             timerTV.setText("Envíando mensaje...");
 
             for(int i=0;i<ajustes.getListString("numeros").size();i++){
@@ -138,9 +159,9 @@ public class BotonFrag extends Fragment{
            }
         }
 
-        else if(tiempo==10 && (ajustes.getString("mensaje").length()==0 || !ajustes.getBoolean("useMessages"))){
+        else if(tiempo==10 && (ajustes.getString("mensaje").length()==0 || !ajustes.getBoolean("useMessages") || ajustes.getListString("contacts").size()==0)){
             timerTV.setText("0:10");
-            Toast.makeText(getActivity(), "No seleccionaste contactos", Toast.LENGTH_SHORT)
+            Toast.makeText(getActivity(), "No activaste la opción de mensajes o no añadiste contactos", Toast.LENGTH_SHORT)
                     .show();
         }
 
@@ -235,5 +256,7 @@ public class BotonFrag extends Fragment{
     public void onDetach(){
         super.onDetach();
         mContext = null;
+
+        timer2.cancel();
     }
 }

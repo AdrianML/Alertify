@@ -1,16 +1,18 @@
 package mx.itesm.alertify;
 
+import android.support.v4.app.FragmentActivity;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 class BotonesySwitchesSettings {
 
     BotonesySwitchesSettings(){
     }
 
-    void isCheck(final Switch callContact, final Switch call911, final TinyDB ajustes) {
+    void isCheck(final Switch callContact, final Switch call911, final TinyDB ajustes, final FragmentActivity activity) {
         callContact.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -25,6 +27,7 @@ class BotonesySwitchesSettings {
                     else{
                         callContact.setChecked(false);
                         call911.setChecked(false);
+                        Toast.makeText(activity,"Agrega un contacto principal para esta función",Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -51,7 +54,7 @@ class BotonesySwitchesSettings {
         });
     }
 
-    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, Switch useWhatsapp, Switch useMessages, Switch sendLocation, EditText etMensaje, TextView tvCuenta, TinyDB tinyDB) {
+    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, Switch useWhatsapp, Switch useMessages, EditText etMensaje, TextView tvCuenta, TinyDB tinyDB,EditText etMensajeCancel) {
         if(ajustes.getBoolean("callContact"))
             callContact.setChecked(true);
 
@@ -63,8 +66,10 @@ class BotonesySwitchesSettings {
             callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));
         }
 
-        if(ajustes.getString("mensaje").length()!=0)
+        if(ajustes.getString("mensaje").length()!=0) {
             etMensaje.setText(ajustes.getString("mensaje"));
+            etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
+        }
 
         if(ajustes.getBoolean("useWhatsapp"))
             useWhatsapp.setChecked(true);
@@ -72,29 +77,12 @@ class BotonesySwitchesSettings {
         if(ajustes.getBoolean("useMessages"))
             useMessages.setChecked(true);
 
-        if(ajustes.getBoolean("sendLocation"))
-            sendLocation.setChecked(true);
-
         tvCuenta.setText(tinyDB.getString("path"));
 
     }
 
 
-    void isCheckShareOptions(final Switch sendLocation, final Switch useWhatsapp, final Switch useMessages, final EditText etMensaje, final TinyDB ajustes) {
-        sendLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (sendLocation.isChecked()) {
-                    sendLocation.setChecked(true);
-                    ajustes.putBoolean("sendLocation",true);
-                }
-
-                else{
-                    ajustes.putBoolean("sendLocation",false);
-                }
-            }
-        });
-
+    void isCheckShareOptions(final Switch useWhatsapp, final Switch useMessages, final EditText etMensaje, final TinyDB ajustes,final  EditText etMensajeCancel) {
         useWhatsapp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,7 +90,7 @@ class BotonesySwitchesSettings {
                     useWhatsapp.setChecked(true);
                     ajustes.putBoolean("useWhatsapp",true);
 
-                    checkMessage(ajustes,etMensaje);
+                    checkMessage(ajustes,etMensaje,etMensajeCancel);
                 }
 
                 else{
@@ -118,7 +106,7 @@ class BotonesySwitchesSettings {
                     useMessages.setChecked(true);
                     ajustes.putBoolean("useMessages",true);
 
-                    checkMessage(ajustes,etMensaje);
+                    checkMessage(ajustes,etMensaje,etMensajeCancel);
                 }
 
                 else{
@@ -128,13 +116,16 @@ class BotonesySwitchesSettings {
         });
     }
 
-    private void checkMessage(TinyDB ajustes, EditText etMensaje){
+    private void checkMessage(TinyDB ajustes, EditText etMensaje,EditText etMensajeCancel){
         if(ajustes.getString("mensaje").length()==0){
             ajustes.putString("mensaje","Ayuda, esto es una alerta");
+            ajustes.putString("mensajeCancel","Ya me encuentro a salvo");
             etMensaje.setText(ajustes.getString("mensaje"));
+            etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
         }
 
         else
             etMensaje.setText(ajustes.getString("mensaje"));
+            etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
     }
 }

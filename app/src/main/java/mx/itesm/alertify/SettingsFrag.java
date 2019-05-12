@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.Objects;
 public class SettingsFrag extends Fragment {
 
     private EditText etMensaje;
+    private EditText etMensajeCancel;
     private TextView lstContactos;
     private  TextView tvCuenta;
     private Switch callContact;
@@ -33,7 +35,6 @@ public class SettingsFrag extends Fragment {
 
     private BotonesySwitchesSettings buttonAndSwitchesManager;
     private Switch useWhatsapp;
-    private Switch sendLocation;
     private Switch call911;
 
     public SettingsFrag() {
@@ -50,13 +51,13 @@ public class SettingsFrag extends Fragment {
 
         lstContactos= view.findViewById(R.id.lstContactos);
         etMensaje= view.findViewById(R.id.etMensaje);
+        etMensajeCancel=view.findViewById(R.id.etMensajeCancel);
         tvCuenta = view.findViewById(R.id.tvCuenta);
 
         callContact= view.findViewById(R.id.call_contact);
         call911 = view.findViewById(R.id.call_911);
         useMessages=view.findViewById(R.id.useMensajes);
         useWhatsapp = view.findViewById(R.id.useWhatsapp);
-        sendLocation = view.findViewById(R.id.sendLocation);
 
         Button addPrincipalContact = view.findViewById(R.id.addPrincipContactButton);
         Button saveMessage = view.findViewById(R.id.saveMessageButton);
@@ -65,13 +66,14 @@ public class SettingsFrag extends Fragment {
         Button logout = view.findViewById(R.id.logOutButton);
 
         //Definir changeListener para switches, si uno esta activado, el otro debe desactivars
-        buttonAndSwitchesManager.isCheck(callContact, call911,ajustes);
-        buttonAndSwitchesManager.isCheckShareOptions(sendLocation, useWhatsapp,useMessages,etMensaje,ajustes);
+        buttonAndSwitchesManager.isCheck(callContact, call911,ajustes,getActivity());
+        buttonAndSwitchesManager.isCheckShareOptions(useWhatsapp,useMessages,etMensaje,ajustes,etMensajeCancel);
 
         //Referencia y metodo onclick para el boton de Definir Contacto Principal, Añadir contacto y Guardar mensaje
         addPrincipalContact.setOnClickListener(new View.OnClickListener() {@SuppressLint("SetTextI18n") @Override
             public void onClick(View v) {
                 ajustes.putBoolean("addPrincipal",true);
+            Log.i("MENSAJE",ajustes.getString("contactPrincipal"));
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent, 1);
             }
@@ -100,6 +102,7 @@ public class SettingsFrag extends Fragment {
                 }
                 else {
                     ajustes.putString("mensaje",etMensaje.getText().toString());
+                    ajustes.putString("mensajeCancel",etMensajeCancel.getText().toString());
                     Toast.makeText(getActivity(),"Mensaje: "+ ajustes.getString("mensaje"),Toast.LENGTH_LONG).show();
 
                     useMessages.setChecked(true);
@@ -121,7 +124,7 @@ public class SettingsFrag extends Fragment {
     }
 
     private void setPreferences(){
-        buttonAndSwitchesManager.checkPreferences(ajustes,callContact,call911,useWhatsapp,useMessages,sendLocation,etMensaje,tvCuenta,tinyDB);
+        buttonAndSwitchesManager.checkPreferences(ajustes,callContact,call911,useWhatsapp,useMessages,etMensaje,tvCuenta,tinyDB,etMensajeCancel);
 
         if(callContact.isChecked() && ajustes.getString("contactPrincipal").length()==0 && ajustes.getString("numeroPrincipal").length()==0){
             callContact.setChecked(false);

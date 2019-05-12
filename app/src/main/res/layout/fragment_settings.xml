@@ -341,61 +341,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:gravity="start"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/logoLocalizacion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="40dp"
-                    android:contentDescription="@string/todo"
-                    android:src="@android:drawable/ic_menu_mylocation"
-                    android:tint="#EA6F27" />
-
-                <TextView
-                    android:id="@+id/localizacion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:capitalize="sentences"
-                    android:gravity="center_vertical"
-                    android:text="@string/localizacion"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Tab"
-                    android:textColor="#EA6F27"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/sendLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal|start"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:includeFontPadding="false"
-                android:text="@string/compartir_localizacion"
-                android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Switch"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/si_desactivas_esta_opci_n_no_se_veran_tus_alertas_en_el_mapa"
-                android:textSize="15sp" />
-
-            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"
