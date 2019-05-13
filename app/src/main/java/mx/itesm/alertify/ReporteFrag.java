@@ -88,7 +88,21 @@ public class ReporteFrag extends Fragment implements  LocationListener{
                     Toast.makeText(getActivity(), "Favor de prender el GPS.", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    subirReporte();
+                    int day = Integer.parseInt(etFecha.getText().toString());
+                    int month = Integer.parseInt(etFecha2.getText().toString());
+                    int year = Integer.parseInt(etFecha3.getText().toString());
+                    int hora = Integer.parseInt(etHora.getText().toString());
+                    int min = Integer.parseInt(etHora2.getText().toString());
+                    if(day < 0 || day > 31 || month < 0 || month > 12 || year < 2018){
+                        Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                    }
+                    else if (hora < 0 || hora > 24 || min < 0 || min > 59){
+                        Toast.makeText(getActivity(), "La hora ingresada no es válida.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        subirReporte();
+                    }
+
                 }
 
 
