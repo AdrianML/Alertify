@@ -1,5 +1,6 @@
 package mx.itesm.alertify;
 
+import android.annotation.SuppressLint;
 import android.support.v4.app.FragmentActivity;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -54,34 +55,6 @@ class BotonesySwitchesSettings {
         });
     }
 
-    void checkPreferences(TinyDB ajustes, Switch callContact, Switch call911, Switch useWhatsapp, Switch useMessages, EditText etMensaje, TextView tvCuenta, TinyDB tinyDB,EditText etMensajeCancel) {
-        if(ajustes.getBoolean("callContact"))
-            callContact.setChecked(true);
-
-        else if(ajustes.getBoolean("call911"))
-            call911.setChecked(true);
-
-        if(ajustes.getString("contactPrincipal").length()!=0){
-            callContact.setText("");
-            callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));
-        }
-
-        if(ajustes.getString("mensaje").length()!=0) {
-            etMensaje.setText(ajustes.getString("mensaje"));
-            etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
-        }
-
-        if(ajustes.getBoolean("useWhatsapp"))
-            useWhatsapp.setChecked(true);
-
-        if(ajustes.getBoolean("useMessages"))
-            useMessages.setChecked(true);
-
-        tvCuenta.setText(tinyDB.getString("path"));
-
-    }
-
-
     void isCheckShareOptions(final Switch useWhatsapp, final Switch useMessages, final EditText etMensaje, final TinyDB ajustes,final  EditText etMensajeCancel) {
         useWhatsapp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -127,5 +100,43 @@ class BotonesySwitchesSettings {
         else
             etMensaje.setText(ajustes.getString("mensaje"));
             etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
+    }
+
+    @SuppressLint("SetTextI18n")
+    void checkCallPreferences(TinyDB ajustes, Switch call911, Switch callContact) {
+        if(ajustes.getBoolean("callContact"))
+            callContact.setChecked(true);
+
+        else if(ajustes.getBoolean("call911"))
+            call911.setChecked(true);
+
+        if(ajustes.getString("contactPrincipal").length()!=0){
+            callContact.setText("");
+            callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));
+        }
+    }
+
+    void checkMessagePreferences(TinyDB ajustes, Switch useWhatsapp, Switch useMessages, EditText etMensaje, EditText etMensajeCancel) {
+        if(ajustes.getString("mensaje").length()!=0) {
+            etMensaje.setText(ajustes.getString("mensaje"));
+            etMensajeCancel.setText(ajustes.getString("mensajeCancel"));
+        }
+
+        if(ajustes.getBoolean("useWhatsapp"))
+            useWhatsapp.setChecked(true);
+
+        if(ajustes.getBoolean("useMessages"))
+            useMessages.setChecked(true);
+    }
+
+    void checkAccountPreferences(TextView tvCuenta, TinyDB tinyDB) {
+        tvCuenta.setText(tinyDB.getString("path").substring(0,tinyDB.getString("path").indexOf("@")));
+        tinyDB.putString("user",tinyDB.getString("path").substring(0,tinyDB.getString("path").indexOf("@")));
+    }
+
+    void missingPrincipalContact(Switch callContact, TinyDB ajustes) {
+        if(callContact.isChecked() && ajustes.getString("contactPrincipal").length()==0 && ajustes.getString("numeroPrincipal").length()==0){
+            callContact.setChecked(false);
+        }
     }
 }

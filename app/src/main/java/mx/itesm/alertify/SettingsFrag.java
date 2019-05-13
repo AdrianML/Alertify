@@ -3,13 +3,10 @@ package mx.itesm.alertify;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,17 +22,20 @@ public class SettingsFrag extends Fragment {
 
     private EditText etMensaje;
     private EditText etMensajeCancel;
+
     private TextView lstContactos;
-    private  TextView tvCuenta;
+    private TextView tvCuenta;
+
     private Switch callContact;
     private Switch useMessages;
-    private TinyDB ajustes;
-    private TinyDB tinyDB;
-    private Context mContext;
-
-    private BotonesySwitchesSettings buttonAndSwitchesManager;
     private Switch useWhatsapp;
     private Switch call911;
+
+    private TinyDB ajustes;
+    private TinyDB tinyDB;
+
+    private Context mContext;
+    private BotonesySwitchesSettings buttonAndSwitchesManager;
 
     public SettingsFrag() {
     }
@@ -73,7 +73,6 @@ public class SettingsFrag extends Fragment {
         addPrincipalContact.setOnClickListener(new View.OnClickListener() {@SuppressLint("SetTextI18n") @Override
             public void onClick(View v) {
                 ajustes.putBoolean("addPrincipal",true);
-            Log.i("MENSAJE",ajustes.getString("contactPrincipal"));
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent, 1);
             }
@@ -119,17 +118,15 @@ public class SettingsFrag extends Fragment {
             }
         });
 
-        getActivity().setTitle("Ajustes");
+        Objects.requireNonNull(getActivity()).setTitle("Ajustes");
         return view;
     }
 
     private void setPreferences(){
-        buttonAndSwitchesManager.checkPreferences(ajustes,callContact,call911,useWhatsapp,useMessages,etMensaje,tvCuenta,tinyDB,etMensajeCancel);
-
-        if(callContact.isChecked() && ajustes.getString("contactPrincipal").length()==0 && ajustes.getString("numeroPrincipal").length()==0){
-            callContact.setChecked(false);
-
-        }
+        buttonAndSwitchesManager.checkCallPreferences(ajustes,call911,callContact);
+        buttonAndSwitchesManager.checkMessagePreferences(ajustes,useWhatsapp,useMessages,etMensaje,etMensajeCancel);
+        buttonAndSwitchesManager.checkAccountPreferences(tvCuenta,tinyDB);
+        buttonAndSwitchesManager.missingPrincipalContact(callContact,ajustes);
     }
 
     private void refreshContactos() {
@@ -140,6 +137,7 @@ public class SettingsFrag extends Fragment {
         }
  }
 
+    @SuppressLint("SetTextI18n")
     private void showPrincipalContact() {
         callContact.setText("");
         callContact.setText("Llamar a: "+ajustes.getString("contactPrincipal")+" - "+ajustes.getString("numeroPrincipal"));

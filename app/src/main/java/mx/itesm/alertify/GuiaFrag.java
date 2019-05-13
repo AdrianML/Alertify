@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Objects;
+
 import mx.itesm.alertify.R;
 
 
@@ -25,6 +27,9 @@ public class GuiaFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        Objects.requireNonNull(getActivity()).setTitle("Guía");
+
         return inflater.inflate(R.layout.fragment_guia, container, false);
     }
 

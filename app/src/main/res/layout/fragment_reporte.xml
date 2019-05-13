@@ -163,9 +163,11 @@
 
             <Button
                 android:id="@+id/btnEnviar"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
+                android:capitalize="words"
                 android:text="Enviar"
                 android:textAlignment="center" />
 
