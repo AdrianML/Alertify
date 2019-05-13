@@ -51,7 +51,8 @@ public class BotonFrag extends Fragment implements LocationListener {
     private TinyDB tinyDB;
     private static final int PERMISO_GPS = 200;
     private int idReporte;
-
+    private double latitud;
+    private double longitud;
 
     CircularProgressButton sosButton;
 
@@ -113,6 +114,9 @@ public class BotonFrag extends Fragment implements LocationListener {
                 clicked+=1;
 
                 if(clicked==1) {
+                    latitud=posicion.getLatitude();
+                    longitud=posicion.getLongitude();
+
                     @SuppressLint("StaticFieldLeak")
                     AsyncTask<String, String, String> sosSend = new AsyncTask<String, String, String>() {
                         @Override
@@ -134,9 +138,18 @@ public class BotonFrag extends Fragment implements LocationListener {
                         }
                     };
                     startAlert(sosButton,sosSend);
+
                 }
 
                 else {
+                    if(ajustes.getBoolean("useMessages") && ajustes.getListString("contactos").size()!=0 && tiempo<10) {
+                        sendCancelSMS();
+                        Toast.makeText(getActivity(), "Mensaje de cancelación enviado, alerta cancelada", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                    else
+                        Toast.makeText(getActivity(), "Alerta cancelada", Toast.LENGTH_LONG)
+                                .show();
                     clicked=0;
                     tiempo=15;
                     alertCanceled(sosButton, timerTV, ajustes);
@@ -155,14 +168,6 @@ public class BotonFrag extends Fragment implements LocationListener {
         timerTV.setText("");
         sosButton.setTextSize(60);
         timer.cancel();
-        if(ajustes.getBoolean("useMessages") && ajustes.getListString("contactos").size()!=0 && tiempo<10) {
-            sendCancelSMS();
-            Toast.makeText(getActivity(), "Mensaje de cancelación enviado, alerta cancelada", Toast.LENGTH_LONG)
-                    .show();
-        }
-        else
-        Toast.makeText(getActivity(), "Alerta cancelada", Toast.LENGTH_LONG)
-                .show();
     }
 
     //Inicio de la alerta
@@ -265,7 +270,7 @@ public class BotonFrag extends Fragment implements LocationListener {
 
     //Metodo para enviar mensaje al contacto principal definido
     public void sendSMS(String phone){
-        final String SMS = ajustes.getString("mensaje");
+        final String SMS = ajustes.getString("mensaje")+"/ LATITUD: "+latitud+" ,LONGITUD: "+longitud;
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(phone, null, SMS, null, null);
@@ -277,7 +282,7 @@ public class BotonFrag extends Fragment implements LocationListener {
         try {
             Intent waIntent = new Intent(Intent.ACTION_SEND);
             waIntent.setType("text/plain");
-            String text = ajustes.getString("mensaje");
+            String text = ajustes.getString("mensaje")+"/ LATITUD: "+latitud+" ,LONGITUD: "+longitud;
 
             PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
             waIntent.setPackage("com.whatsapp");
@@ -304,9 +309,9 @@ public class BotonFrag extends Fragment implements LocationListener {
 
         String[] fechaaux = formattedDate.split("-");
 
-        double lat = posicion.getLatitude();
-        double lng = posicion.getLongitude();
-        String titulo = "Alerta de "+ajustes.getString("user");
+        double lat = latitud;//posicion.getLatitude();
+        double lng = longitud;//posicion.getLongitude();
+        String titulo = ajustes.getString("user");
         String dd = fechaaux[0];
         String mm = fechaaux[1];
         String aaaa = fechaaux[2];
@@ -314,7 +319,7 @@ public class BotonFrag extends Fragment implements LocationListener {
         String hora = "10";
         String min = "00";
         String horaMin = hora+":"+min;
-        String desc = "Alerta de usuario";
+        String desc = "Alerta";
 
         if(!titulo.isEmpty() && !dd.isEmpty() && !mm.isEmpty() && !aaaa.isEmpty() && !hora.isEmpty() && !min.isEmpty() && !desc.isEmpty()){
             Report newReport = new Report(idReporte,titulo, fecha, horaMin, desc, lat, lng);
@@ -420,6 +425,8 @@ public class BotonFrag extends Fragment implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         posicion = location;
+        latitud=posicion.getLatitude();
+        longitud=posicion.getLongitude();
     }
 
     @Override
