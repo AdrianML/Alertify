@@ -53,6 +53,7 @@ public class BotonFrag extends Fragment implements LocationListener {
     private int idReporte;
     private double latitud;
     private double longitud;
+    LocationManager locationManager;
 
     CircularProgressButton sosButton;
 
@@ -114,8 +115,7 @@ public class BotonFrag extends Fragment implements LocationListener {
                 clicked+=1;
 
                 if(clicked==1) {
-                    latitud=posicion.getLatitude();
-                    longitud=posicion.getLongitude();
+                    getLocation();
 
                     @SuppressLint("StaticFieldLeak")
                     AsyncTask<String, String, String> sosSend = new AsyncTask<String, String, String>() {
@@ -160,6 +160,16 @@ public class BotonFrag extends Fragment implements LocationListener {
         Objects.requireNonNull(getActivity()).setTitle("Alertify");
 
         return v;
+    }
+
+    private void getLocation() {
+        try {
+            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+        }
+        catch(SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     //Metodo para cencelar una alerta
