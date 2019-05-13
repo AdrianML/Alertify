@@ -11,6 +11,8 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -95,6 +97,13 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
     private Button mEmailSignInButton;
     private Button btnRegister;
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +145,6 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                 attemptCreateUser();
             }
         });
-
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -195,6 +203,13 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
         final String password = mPasswordView.getText().toString();
         boolean cancel = false;
         View focusView = null;
+
+        if (!isNetworkAvailable()){
+            Toast.makeText(LoginActiv.this, "Error de conexión",
+                    Toast.LENGTH_SHORT).show();
+            focusView = mEmailView;
+            cancel = true;
+        }
 
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
@@ -288,6 +303,14 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
 
         boolean cancel = false;
         View focusView = null;
+
+
+        if (!isNetworkAvailable()){
+            Toast.makeText(LoginActiv.this, "Error de conexión",
+                    Toast.LENGTH_SHORT).show();
+            focusView = mEmailView;
+            cancel = true;
+        }
 
         // Check for a valid password, if the user entered one.
         if (password == null && !isPasswordValid(password)) {
