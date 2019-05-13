@@ -27,24 +27,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView20"
+            <Button
+                android:id="@+id/inicio"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:capitalize="characters"
                 android:text="Inicio"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+                android:textAllCaps="false"
+                android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/textView27"
+                android:id="@+id/inicioTV1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -59,7 +52,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView21"
+                android:id="@+id/inicioTV2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -72,7 +65,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/inicioTV3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -85,7 +78,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/inicioTV4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -98,7 +91,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView24"
+                android:id="@+id/inicioTV5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -111,7 +104,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView25"
+                android:id="@+id/inicioTV6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -124,7 +117,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView26"
+                android:id="@+id/inicioTV7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -136,24 +129,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
-            <TextView
-                android:id="@+id/textView32"
+            <Button
+                android:id="@+id/ajustes"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:capitalize="characters"
                 android:text="Ajustes"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+                android:textAllCaps="false"
+                android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/textView33"
+                android:id="@+id/ajustesTV1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -166,7 +152,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView34"
+                android:id="@+id/ajustesTV2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -179,7 +165,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView35"
+                android:id="@+id/ajustesTV3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -192,7 +178,7 @@
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
             <TextView
-                android:id="@+id/textView36"
+                android:id="@+id/ajustesTV4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -204,24 +190,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
-            <TextView
-                android:id="@+id/textView28"
+            <Button
+                android:id="@+id/mapa"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:capitalize="characters"
                 android:text="Mapa"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+                android:textAllCaps="false"
+                android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/textView29"
+                android:id="@+id/mapaTV1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -235,24 +214,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
-            <TextView
-                android:id="@+id/textView30"
+            <Button
+                android:id="@+id/reportes"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:capitalize="characters"
-                android:text="Reportes"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+                android:text="@string/Reportes"
+                android:textAllCaps="false"
+                android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/textView31"
+                android:id="@+id/reportesTV1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -266,20 +238,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/scrollView2" />
 
-            <TextView
-                android:id="@+id/textView19"
+            <Button
+                android:id="@+id/seguridad"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Consejos de seguridad"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+                android:text="Seguridad"
+                android:textAllCaps="false"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/textView2"
