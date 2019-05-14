@@ -269,6 +269,7 @@ public class LoginActiv extends AppCompatActivity implements LoaderCallbacks<Cur
                                 mEditor.putBoolean("loginsuccesful", true).commit();
                                 Intent intInicio = new Intent(getBaseContext(), InicioActiv.class);
                                 startActivity(intInicio);
+                                finish();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 showProgress(false);

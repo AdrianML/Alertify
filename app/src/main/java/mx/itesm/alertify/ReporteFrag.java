@@ -152,15 +152,15 @@ public class ReporteFrag extends Fragment implements  LocationListener{
             int hour = Integer.parseInt(etHora.getText().toString());
             int minutes = Integer.parseInt(etHora2.getText().toString());
             if(day < 0 || day > 31){
-                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "El día ingresado no es válido.", Toast.LENGTH_LONG).show();
                 return;
             }
             else if(month < 0 || month > 12){
-                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "El mes ingresado es válido.", Toast.LENGTH_LONG).show();
                 return;
             }
             else if(year < 2018 || year > 2030){
-                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "El año ingresado no es válido.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -169,7 +169,7 @@ public class ReporteFrag extends Fragment implements  LocationListener{
                 return;
             }
             else if (minutes < 0 || minutes > 59){
-                Toast.makeText(getActivity(), "La hora ingresada no es válida.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Los minutos ingresados no son válidos.", Toast.LENGTH_LONG).show();
                 return;
             }
             Report newReport = new Report(idReporte,titulo, fecha, horaMin, desc, lat, lng);
