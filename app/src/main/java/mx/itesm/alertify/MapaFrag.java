@@ -106,7 +106,9 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
                         String titulo = reportes.get(i).get("titulo").toString();
                         Double latitud = Double.parseDouble(reportes.get(i).get("latitud").toString());
                         Double longitud = Double.parseDouble(reportes.get(i).get("longitud").toString());
-                        Alerta nuevaAlerta = new Alerta(titulo, latitud, longitud);
+                        String fecha = reportes.get(i).get("fecha").toString();
+                        String hora = reportes.get(i).get("hora").toString();
+                        Alerta nuevaAlerta = new Alerta(titulo, latitud, longitud, fecha, hora);
                         arrReportes.add(nuevaAlerta);
 
                     }
@@ -118,7 +120,7 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
                 //Crear pins
 
                 for(Alerta al: arrReportes){
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(al.getLatitud(), al.getLongitud())).title("ALERTA").snippet(al.getTitulo()));
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(al.getLatitud(), al.getLongitud())).title("ALERTA").snippet(al.getTitulo() + " - " + al.getFecha() + " - " + al.getHora()));
                 }
 
             }
@@ -180,12 +182,6 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
 
         googleMap.getUiSettings().setCompassEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true); // true to enable
-
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.596813, -99.226647)).title("ALERTA").snippet("Robo a mano armada"));
-
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.592617, -99.229584)).title("ALERTA").snippet("Intento de secuestro"));
-
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(19.595863, -99.225809)).title("ALERTA").snippet("Robo de vehículo"));
 
         descargarReportes(googleMap);
 
