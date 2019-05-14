@@ -6,14 +6,12 @@ public class Alerta {
     private double latitud;
     private double longitud;
     private String fecha;
-    private String hora;
 
-    public Alerta(String titulo, double latitud, double longitud, String fecha, String hora){
+    public Alerta(String titulo, double latitud, double longitud, String fecha){
         this.titulo = titulo;
         this.latitud = latitud;
         this.longitud = longitud;
         this.fecha = fecha;
-        this.hora = hora;
     }
 
     public String getTitulo() {
@@ -48,16 +46,8 @@ public class Alerta {
         this.fecha = fecha;
     }
 
-    public String getHora() {
-        return hora;
-    }
-
-    public void setHora(String hora) {
-        this.hora = hora;
-    }
-
     @Override
     public String toString() {
-        return "[titulo: " + this.titulo + ", latitud: " + this.latitud + ", longitud: " + this.longitud + ", fecha: " + this.fecha + ", hora: " + this.hora + "]";
+        return "[titulo: " + this.titulo + ", latitud: " + this.latitud + ", longitud: " + this.longitud + ", fecha: " + this.fecha + ", hora: " + "]";
     }
 }

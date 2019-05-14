@@ -107,8 +107,7 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
                         Double latitud = Double.parseDouble(reportes.get(i).get("latitud").toString());
                         Double longitud = Double.parseDouble(reportes.get(i).get("longitud").toString());
                         String fecha = reportes.get(i).get("fecha").toString();
-                        String hora = reportes.get(i).get("hora").toString();
-                        Alerta nuevaAlerta = new Alerta(titulo, latitud, longitud, fecha, hora);
+                        Alerta nuevaAlerta = new Alerta(titulo, latitud, longitud, fecha);
                         arrReportes.add(nuevaAlerta);
 
                     }
@@ -120,7 +119,7 @@ public class MapaFrag extends Fragment implements OnMapReadyCallback, LocationLi
                 //Crear pins
 
                 for(Alerta al: arrReportes){
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(al.getLatitud(), al.getLongitud())).title("ALERTA").snippet(al.getTitulo() + " - " + al.getFecha() + " - " + al.getHora()));
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(al.getLatitud(), al.getLongitud())).title("ALERTA").snippet(al.getTitulo() + " - " + al.getFecha()));
                 }
 
             }
