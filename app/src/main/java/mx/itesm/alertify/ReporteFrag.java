@@ -102,6 +102,8 @@ public class ReporteFrag extends Fragment implements  LocationListener{
     public void subirReporte() {
         if(posicion == null){
             gps.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            Toast.makeText(getActivity(), "Error de conexión, intente más tarde.", Toast.LENGTH_LONG).show();
+
 
         }else {
             double lat = posicion.getLatitude();
@@ -116,45 +118,77 @@ public class ReporteFrag extends Fragment implements  LocationListener{
             String horaMin = etHora.getText().toString()+":"+etHora2.getText().toString();
             String desc = etDesc.getText().toString();
 
-            if(!titulo.isEmpty() && !dd.isEmpty() && !mm.isEmpty() && !aaaa.isEmpty() && !hora.isEmpty() && !min.isEmpty() && !desc.isEmpty()){
-                int day = Integer.parseInt(etFecha.getText().toString());
-                int month = Integer.parseInt(etFecha2.getText().toString());
-                int year = Integer.parseInt(etFecha3.getText().toString());
-                int hour = Integer.parseInt(etHora.getText().toString());
-                int minutes = Integer.parseInt(etHora2.getText().toString());
-                if(day < 0 || day > 31 || month < 0 || month > 12 || year < 2018){
-                    Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                else if (hour < 0 || hour > 24 || minutes < 0 || minutes > 59){
-                    Toast.makeText(getActivity(), "La hora ingresada no es válida.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                Report newReport = new Report(idReporte,titulo, fecha, horaMin, desc, lat, lng);
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-                String email = tinyDB.getString("path");
-                String path = "";
-
-                for(int c = 0; c < email.length(); c++){
-                    if(email.charAt(c) != '.'){
-                        path += email.charAt(c);
-                    }
-                }
-                tinyDB.putInt("idReporte", idReporte);
-                DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
-                ruta.child("Reportes/" + tinyDB.getInt("idReporte")).setValue(newReport); //Contenido
-
-                limpiarPantalla();
-            }
-            else {
+            if(titulo.isEmpty()){
                 Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
             }
+            if(dd.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(mm.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(aaaa.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(hora.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(min.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(desc.isEmpty()){
+                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            int day = Integer.parseInt(etFecha.getText().toString());
+            int month = Integer.parseInt(etFecha2.getText().toString());
+            int year = Integer.parseInt(etFecha3.getText().toString());
+            int hour = Integer.parseInt(etHora.getText().toString());
+            int minutes = Integer.parseInt(etHora2.getText().toString());
+            if(day < 0 || day > 31){
+                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if(month < 0 || month > 12){
+                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if(year < 2018 || year > 2030){
+                Toast.makeText(getActivity(), "La fecha ingresada no es válida.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            else if (hour < 0 || hour > 24){
+                Toast.makeText(getActivity(), "La hora ingresada no es válida.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if (minutes < 0 || minutes > 59){
+                Toast.makeText(getActivity(), "La hora ingresada no es válida.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Report newReport = new Report(idReporte,titulo, fecha, horaMin, desc, lat, lng);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+            String email = tinyDB.getString("path");
+            String path = "";
+            for(int c = 0; c < email.length(); c++){
+                if(email.charAt(c) != '.'){
+                    path += email.charAt(c);
+                }
+            }
+            tinyDB.putInt("idReporte", idReporte);
+            DatabaseReference ruta = database.getReference("User/" + path + "/"); //Tabla
+            ruta.child("Reportes/" + tinyDB.getInt("idReporte")).setValue(newReport); //Contenido
+            limpiarPantalla();
         }
-
-
-
     }
+
 
 
     public void limpiarPantalla(){
