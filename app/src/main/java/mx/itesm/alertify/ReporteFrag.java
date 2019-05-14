@@ -262,7 +262,6 @@ public class ReporteFrag extends Fragment implements  LocationListener{
 
     @Override
     public void onProviderDisabled(String provider) {
-        //Toast.makeText(getActivity(), "Favor de prender el GPS para generar reportes.", Toast.LENGTH_LONG).show();
         prenderGPS();
     }
 }
