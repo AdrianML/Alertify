@@ -118,33 +118,48 @@ public class ReporteFrag extends Fragment implements  LocationListener{
             String horaMin = etHora.getText().toString()+":"+etHora2.getText().toString();
             String desc = etDesc.getText().toString();
 
+            //Si hay error, request focus
+            boolean cancel = false;
+            View focusView = null;
+
             if(titulo.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etTitulo.setError("Campo vacío");
+                focusView = etTitulo;
+                cancel = true;
             }
             if(dd.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etFecha.setError("Campo vacío");
+                focusView = etFecha;
+                cancel = true;
             }
             if(mm.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etFecha2.setError("Campo vacío");
+                focusView = etFecha2;
+                cancel = true;
             }
             if(aaaa.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etFecha3.setError("Campo vacío");
+                focusView = etFecha3;
+                cancel = true;
             }
             if(hora.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etHora.setError("Campo vacío");
+                focusView = etHora;
+                cancel = true;
             }
             if(min.isEmpty()){
-                Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                etHora2.setError("Campo vacío");
+                focusView = etHora2;
+                cancel = true;
             }
             if(desc.isEmpty()){
+                etDesc.setError("Campo vacío");
+                focusView = etDesc;
+                cancel = true;
+            }
+            if (cancel){
                 Toast.makeText(getActivity(), "Favor de llenar todos los campos.", Toast.LENGTH_LONG).show();
-                return;
+                focusView.requestFocus();
             }
             int day = Integer.parseInt(etFecha.getText().toString());
             int month = Integer.parseInt(etFecha2.getText().toString());
