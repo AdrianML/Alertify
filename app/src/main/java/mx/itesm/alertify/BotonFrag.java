@@ -98,7 +98,7 @@ public class BotonFrag extends Fragment implements LocationListener {
             @Override
             public void onFinish() {
                 timerTV.setText("");
-                Toast.makeText(getActivity(), "Alerta envíada", Toast.LENGTH_LONG)
+                Toast.makeText(getActivity(), "Alerta enviada", Toast.LENGTH_LONG)
                         .show();
                 tiempo=15;
                 sosButton.revertAnimation();
@@ -217,7 +217,7 @@ public class BotonFrag extends Fragment implements LocationListener {
     @SuppressLint("SetTextI18n")
     private void doActions(int tiempo) {
         if(tiempo==10 && ajustes.getString("mensaje").length()!=0 && ajustes.getBoolean("useMessages") && ajustes.getListString("contactos").size()!=0){
-            timerTV.setText("Envíando mensaje...");
+            timerTV.setText("Enviando mensaje...");
 
             for(int i=0;i<ajustes.getListString("numeros").size();i++){
                 sendSMS(ajustes.getListString("numeros").get(i));
@@ -280,7 +280,9 @@ public class BotonFrag extends Fragment implements LocationListener {
 
     //Metodo para enviar mensaje al contacto principal definido
     public void sendSMS(String phone){
-        final String SMS = ajustes.getString("mensaje")+"/ LATITUD: "+latitud+" ,LONGITUD: "+longitud;
+       // final String SMS = ajustes.getString("mensaje")+"/ LATITUD: "+String.valueOf(latitud)+" ,LONGITUD: "+String.valueOf(longitud);
+        final String SMS = ajustes.getString("mensaje")+" http://maps.google.com/?q="+String.valueOf(latitud)+","+String.valueOf(longitud);
+
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(phone, null, SMS, null, null);
@@ -292,7 +294,7 @@ public class BotonFrag extends Fragment implements LocationListener {
         try {
             Intent waIntent = new Intent(Intent.ACTION_SEND);
             waIntent.setType("text/plain");
-            String text = ajustes.getString("mensaje")+"/ LATITUD: "+latitud+" ,LONGITUD: "+longitud;
+            final String text = ajustes.getString("mensaje")+" http://maps.google.com/?q="+String.valueOf(latitud)+","+String.valueOf(longitud);
 
             PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
             waIntent.setPackage("com.whatsapp");

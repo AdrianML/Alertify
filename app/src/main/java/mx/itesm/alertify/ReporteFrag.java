@@ -291,11 +291,11 @@ public class ReporteFrag extends Fragment implements  LocationListener{
 
     @Override
     public void onProviderEnabled(String provider) {
-        configurarGPS();
+        //configurarGPS();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        prenderGPS();
+        //prenderGPS();
     }
 }
